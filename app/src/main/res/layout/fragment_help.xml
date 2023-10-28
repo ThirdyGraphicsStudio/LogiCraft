@@ -1,9 +1,281 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:padding="20dp"
     tools:context=".Fragment.Help">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Help And Tutorial"
+        android:fontFamily="@font/poppinssemibold"
+        android:textColor="@color/primary"
+        android:textSize="16sp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome to LogiCraft! Need help getting started?"
+        android:fontFamily="@font/poppinssemibold"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Our user manual provides step-by-step instructions, explanations, and illustrations on how to use our application and its features. Get the most out of our application with our easy-to-follow user manual, your go-to guide for all your digital circuit design needs."
+        android:fontFamily="@font/poppinsregular"
+        android:textColor="@color/highlight"
+        android:textSize="14sp"
+        />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        android:hint="Search"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+
+        app:endIconMode="custom"
+        app:endIconScaleType="center"
+        app:endIconTint="@color/primary"
+        app:endIconDrawable="@drawable/search"
+        app:endIconContentDescription="Search Icon">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <LinearLayout
+        android:layout_marginVertical="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/header1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="3dp"
+            android:foreground="@drawable/ripple"
+
+            android:layout_marginTop="15dp"
+            android:outlineSpotShadowColor="@color/shadow"
+            android:outlineAmbientShadowColor="@color/shadow"
+            android:clickable="true"
+            android:focusable="true"
+           >
+
+            <RelativeLayout
+                android:padding="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:text="Truth Table"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/poppinsmedium"
+                    />
+
+
+
+                <ImageView
+                    android:id="@+id/dropdown_icon"
+
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/add"
+                    app:tint="@color/primary"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    />
+
+            </RelativeLayout>
+
+
+
+        </androidx.cardview.widget.CardView>
+        <!-- Header with dropdown icon and text -->
+
+        <!-- Content that will be shown/hidden -->
+        <TextView
+            android:id="@+id/content_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Content goes here"
+            android:padding="8dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginVertical="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/header2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="3dp"
+            android:foreground="@drawable/ripple"
+
+            android:layout_marginTop="15dp"
+            android:outlineSpotShadowColor="@color/shadow"
+            android:outlineAmbientShadowColor="@color/shadow"
+            android:clickable="true"
+            android:focusable="true"
+            >
+
+            <RelativeLayout
+                android:padding="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:text="Karnaugh Map"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/poppinsmedium"
+                    />
+
+
+
+                <ImageView
+                    android:id="@+id/dropdown_icon2"
+
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/add"
+                    app:tint="@color/primary"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    />
+
+            </RelativeLayout>
+
+
+
+        </androidx.cardview.widget.CardView>
+        <!-- Header with dropdown icon and text -->
+
+        <!-- Content that will be shown/hidden -->
+        <TextView
+            android:id="@+id/content_text2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Content goes here"
+            android:padding="8dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginVertical="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/header3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="3dp"
+            android:foreground="@drawable/ripple"
+
+            android:layout_marginTop="15dp"
+            android:outlineSpotShadowColor="@color/shadow"
+            android:outlineAmbientShadowColor="@color/shadow"
+            android:clickable="true"
+            android:focusable="true"
+            >
+
+            <RelativeLayout
+                android:padding="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:text="Boolean Expression"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/poppinsmedium"
+                    />
+
+
+
+                <ImageView
+                    android:id="@+id/dropdown_icon3"
+
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/add"
+                    app:tint="@color/primary"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    />
+
+            </RelativeLayout>
+
+
+
+        </androidx.cardview.widget.CardView>
+        <!-- Header with dropdown icon and text -->
+
+        <!-- Content that will be shown/hidden -->
+        <TextView
+            android:id="@+id/content_text3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Content goes here"
+            android:padding="8dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+
+</LinearLayout>
