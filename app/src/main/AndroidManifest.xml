@@ -13,6 +13,10 @@
         android:theme="@style/Theme.BooleanExpression"
         tools:targetApi="31">
         <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            />
+        <activity
             android:name=".Fragment.Help"
             android:exported="false" />
         <activity
@@ -22,7 +26,9 @@
             android:name=".Fragment.Homepage"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".BooleanExpression.MainBooleanExpression"
+            android:windowSoftInputMode="stateHidden|adjustNothing"
+            android:theme="@style/Theme.BooleanExpression"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
