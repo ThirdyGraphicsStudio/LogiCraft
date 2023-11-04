@@ -59,7 +59,19 @@ public class MainBooleanExpression extends AppCompatActivity {
 
         MaterialButton btnGenerate = findViewById(R.id.btnGenerate);
         btnGenerate.setOnClickListener(view -> {
-            startActivity(new Intent(MainBooleanExpression.this, FormulaBooleanExpression.class));
+            String input = displayEditText.getText().toString();
+
+            if(input.isEmpty()){
+                displayEditText.setError("Please input a boolean expression");
+                displayEditText.setFocusable(true);
+                return;
+            }
+
+            if(!input.isEmpty()){
+                startActivity(new Intent(MainBooleanExpression.this, FormulaBooleanExpression.class));
+            }
+
+
         });
         displayEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
