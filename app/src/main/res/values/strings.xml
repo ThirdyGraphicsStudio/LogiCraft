@@ -45,4 +45,28 @@
     </string>
     <string name="curlydash">~</string>
     <string name="singleAtmosphere">\'</string>
+
+
+
+    <string name="truth_description">To generate the truth table for this expression, we need to consider all possible combinations of values for the variables A, B, and C. Since there are two possible values for each variable, there are 2^3 = 8 possible combinations of values to consider. Here is the truth table for the boolean expression (~BC+A~B~C+AB):</string>
+    <string name="kmap_description">Transfer the values from the truth table onto the K-map by placing a 1 in the appropriate square of the K-map for each row in which the expression evaluates to true, and a 0 in the squares where the expression evaluates to false. In this case, the K-map would look like:
+    </string>
+
+    <string name="grouping_description">Group together the 1\'s in the K-map to simplify the expression. </string>
+    <string name="logic_diagram_description">We can generate a logic diagram for the simplified expression. The logic diagram represents the simplified expression using logic gates, which show how the input variables are combined to produce the output variable. \n\nBelow is the logic diagram for the simplified expression:</string>
+
+
+    <string-array name="dropdown_items">
+        <item>SOP</item>
+        <item>POS</item>
+    </string-array>
+
+    <string-array name="dropdown_items_export">
+        <item>Export as</item>
+        <item>PNG</item>
+        <item>JPEG</item>
+        <item>PDF</item>
+
+    </string-array>
+
 </resources>

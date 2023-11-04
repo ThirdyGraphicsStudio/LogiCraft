@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import com.google.android.material.button.MaterialButton;
 import com.thirdy.booleanexpression.R;
 
 public class MainBooleanExpression extends AppCompatActivity {
@@ -51,7 +53,14 @@ public class MainBooleanExpression extends AppCompatActivity {
 
 
         ImageButton back = findViewById(R.id.back);
+        back.setOnClickListener(v -> {
+            finish();
+        });
 
+        MaterialButton btnGenerate = findViewById(R.id.btnGenerate);
+        btnGenerate.setOnClickListener(view -> {
+            startActivity(new Intent(MainBooleanExpression.this, FormulaBooleanExpression.class));
+        });
         displayEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -62,9 +71,6 @@ public class MainBooleanExpression extends AppCompatActivity {
             }
         });
 
-        back.setOnClickListener(v -> {
-            finish();
-        });
 
 
         // Set the buttons' onClickListeners

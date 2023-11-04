@@ -87,6 +87,7 @@
             >
 
             <LinearLayout
+                android:id="@+id/cardViewTruthTable"
                 android:padding="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -133,6 +134,7 @@
             >
 
             <LinearLayout
+                android:id="@+id/cardViewKarnaughMap"
                 android:padding="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -178,6 +180,7 @@
             >
 
             <LinearLayout
+                android:id="@+id/cardViewBooleanExpression"
                 android:padding="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
