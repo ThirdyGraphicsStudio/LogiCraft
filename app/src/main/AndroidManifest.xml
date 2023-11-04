@@ -13,6 +13,12 @@
         android:theme="@style/Theme.BooleanExpression"
         tools:targetApi="31">
         <activity
+            android:name=".KarnaughMap.FormulaKarnaughMap"
+            android:exported="false" />
+        <activity
+            android:name=".KarnaughMap.MainKarnaughMap"
+            android:exported="false" />
+        <activity
             android:name=".TruthTable.FormulaTruthTable"
             android:exported="false" />
         <activity
