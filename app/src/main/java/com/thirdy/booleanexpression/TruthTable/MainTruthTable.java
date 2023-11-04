@@ -35,7 +35,7 @@ public class MainTruthTable extends AppCompatActivity {
         MaterialButton btnGenerate = findViewById(R.id.btnGenerate);
 
         btnGenerate.setOnClickListener(v -> {
-            //startActivity(new Intent(MainTruthTable.this, TruthTable.class));
+            startActivity(new Intent(MainTruthTable.this, FormulaTruthTable.class));
         });
 
         MaterialButton dropdownButton = findViewById(R.id.dropdownButton);
