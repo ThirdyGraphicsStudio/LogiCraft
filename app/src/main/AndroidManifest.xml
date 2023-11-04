@@ -13,7 +13,10 @@
         android:theme="@style/Theme.BooleanExpression"
         tools:targetApi="31">
         <activity
-            android:name=".MainTruthTable"
+            android:name=".TruthTable.FormulaTruthTable"
+            android:exported="false" />
+        <activity
+            android:name=".TruthTable.MainTruthTable"
             android:exported="false" />
         <activity
             android:name=".BooleanExpression.MainBooleanExpression"

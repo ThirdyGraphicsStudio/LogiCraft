@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 
 import com.thirdy.booleanexpression.BooleanExpression.MainBooleanExpression;
 import com.thirdy.booleanexpression.R;
+import com.thirdy.booleanexpression.TruthTable.MainTruthTable;
 
 public class Homepage extends Fragment {
     View view;
@@ -29,7 +30,7 @@ public class Homepage extends Fragment {
 
 
         cardViewTruthTable.setOnClickListener(view1 -> {
-
+            startActivity(new Intent(getContext(), MainTruthTable.class));
         });
 
         cardViewKarnaughMap.setOnClickListener(view1 -> {

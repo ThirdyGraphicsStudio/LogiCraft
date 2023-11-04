@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/two" android:title="2 variables" />
+    <item android:id="@+id/three" android:title="3 variables" />
+    <item android:id="@+id/four" android:title="4 variables" />
+    <item android:id="@+id/five" android:title="5 variables" />
+    <item android:id="@+id/six" android:title="6 variables" />
+</menu>
