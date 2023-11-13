@@ -2,9 +2,11 @@ package com.thirdy.booleanexpression.TruthTable;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -14,6 +16,9 @@ import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
 import com.thirdy.booleanexpression.R;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainTruthTable extends AppCompatActivity {
 
@@ -29,14 +34,11 @@ public class MainTruthTable extends AppCompatActivity {
         });
 
         //generate table
-        generateTruthTable();
+        generateTruthTable(3);
 
 
-        MaterialButton btnGenerate = findViewById(R.id.btnGenerate);
 
-        btnGenerate.setOnClickListener(v -> {
-            startActivity(new Intent(MainTruthTable.this, FormulaTruthTable.class));
-        });
+
 
         MaterialButton dropdownButton = findViewById(R.id.dropdownButton);
 
@@ -49,48 +51,64 @@ public class MainTruthTable extends AppCompatActivity {
 
                 if (id == R.id.two) {
                     // Handle "two" click
+                    generateTruthTable(2);
                     dropdownButton.setText("2 variables");
                 } else if (id == R.id.three) {
                     // Handle "three" click
                     dropdownButton.setText("3 variables");
+                    generateTruthTable(3);
+
                 } else if (id == R.id.four) {
                     // Handle "four" click
                     dropdownButton.setText("4 variables");
+                    generateTruthTable(4);
+
                 } else if (id == R.id.five) {
                     // Handle "five" click
                     dropdownButton.setText("5 variables");
+                    generateTruthTable(5);
                 } else if (id == R.id.six) {
                     // Handle "six" click
                     dropdownButton.setText("6 variables");
+                    generateTruthTable(6);
+
                 } else {
                     // If none of the above, return false.
                     return false;
                 }
 
-// If one of the cases matched and the action was handled, return true.
+                // If one of the cases matched and the action was handled, return true.
                 return true;
-
             });
             popupMenu.show();
         });
 
-
-
     }
 
-    private void generateTruthTable() {
+    public void generateTruthTable(int variableCount) {
         TableLayout tableLayout = findViewById(R.id.tableLayout); // Make sure you have a TableLayout in your XML with this ID
+        tableLayout.removeAllViews(); // Clear the existing table content
 
         // Create a header row
         TableRow headerRow = new TableRow(this);
         headerRow.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
         headerRow.setBackgroundColor(getResources().getColor(R.color.primary));
-        String[] headerTexts = {"A", "B", "C", "m", "F"};
-        for (String headerText : headerTexts) {
+
+        // Define header texts dynamically based on the number of variables
+        // Dynamic header based on the number of variables
+        String[] headerTexts = new String[variableCount + 2]; // +2 for 'm' and 'F' columns
+        for (int i = 0; i < variableCount; i++) {
+            headerTexts[i] = String.valueOf((char) ('A' + i)); // Create header labels dynamically
+        }
+        headerTexts[variableCount] = "m";
+        headerTexts[variableCount + 1] = "F";
+
+        // Add header texts to the header row
+        for (String text : headerTexts) {
             TextView textView = new TextView(this);
-            textView.setText(headerText);
-            textView.setTextColor(getResources().getColor(R.color.white));
+            textView.setText(text);
             textView.setGravity(Gravity.CENTER);
+            textView.setTextColor(getResources().getColor(R.color.white));
             textView.setTextSize(16);
             textView.setPadding(10, 10, 10, 10);
             headerRow.addView(textView);
@@ -98,34 +116,74 @@ public class MainTruthTable extends AppCompatActivity {
 
         tableLayout.addView(headerRow);
 
-        // Add data as rows
-        int[][] data = {
-                {0, 0, 0, 0, 0},
-                {0, 0, 1, 1, 1},
-                {0, 0, 1, 1, 1},
-                {0, 0, 1, 1, 1},
-                {0, 0, 1, 1, 1},
-                {0, 0, 1, 1, 1},
-                {1, 1, 1, 7, 1}
-        };
+        // Generate the data for the truth table based on the number of variables
+        int rowCount = (int) Math.pow(2, variableCount); // Calculate the number of rows for the table
+        int[][] rows = new int[rowCount][variableCount + 2]; // Initialize your rows array with the correct size
 
-        for (int[] rowData : data) {
+        for (int i = 0; i < rowCount; i++) {
             TableRow row = new TableRow(this);
+
             row.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
             row.setPaddingRelative(0, 2, 0, 2);
 
-            for (int cellData : rowData) {
+            final int rowIdx = i; // Capture the row index for use in the lambda expression
+
+            for (int j = 0; j < variableCount + 2; j++) { // Iterate over each column
                 TextView textView = new TextView(this);
-                textView.setText(String.valueOf(cellData));
+                if (j < variableCount) { // For variable columns
+                    rows[i][j] = (i / (int) Math.pow(2, variableCount - j - 1)) % 2; // Calculate truth value
+                } else if (j == variableCount) { // For 'm' column
+                    rows[i][j] = i; // 'm' column holds the row number
+                } // 'F' column will be handled separately as it's interactive
+
+                textView.setText(String.valueOf(rows[i][j]));
                 textView.setGravity(Gravity.CENTER);
                 textView.setPadding(10, 10, 10, 10);
                 textView.setTextSize(14);
                 textView.setTextColor(getResources().getColor(R.color.black));
+
+                // If this is the 'F' column, make it interactive
+                if (j == variableCount + 1) {
+                    textView.setTag("F" + i);
+                    textView.setOnClickListener(v -> {
+                        TextView tv = (TextView) v;
+                        int newValue = tv.getText().toString().equals("0") ? 1 : 0;
+                        tv.setText(String.valueOf(newValue));
+                        // Update the corresponding value in the rows array
+                        rows[rowIdx][variableCount+1] = newValue;
+                    });
+                }
                 row.addView(textView);
             }
 
             tableLayout.addView(row);
         }
+
+
+
+        //when the user click generate button
+        MaterialButton btnGenerate = findViewById(R.id.btnGenerate);
+
+
+        btnGenerate.setOnClickListener(v -> {
+            // Create an array to hold the state of the "F" column
+            int[] fColumnValues = new int[rowCount];
+            for (int i = 0; i < rowCount; i++) {
+                fColumnValues[i] = rows[i][variableCount + 1]; // Assuming this is where the "F" column is
+            }
+
+            // Create the intent to start the new activity
+            Intent intent = new Intent(MainTruthTable.this, FormulaTruthTable.class);
+            intent.putExtra("fColumnValues", fColumnValues); // Pass the "F" column values
+            intent.putExtra("variableCount", variableCount); // Pass the number of variables
+            // Start the new activity
+            startActivity(intent);
+        });
+
+
     }
 
+
 }
+
+

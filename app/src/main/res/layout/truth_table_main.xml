@@ -47,11 +47,14 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp"
         >
 
 
@@ -90,7 +93,6 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:stretchColumns="*"
-        android:padding="20dp"
         />
 
 
@@ -118,6 +120,7 @@
         app:strokeWidth="1dp" />
 
     </LinearLayout>
+    </ScrollView>
 
 
 

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -15,19 +16,42 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.google.android.material.button.MaterialButton;
 import com.thirdy.booleanexpression.R;
 
 public class FormulaTruthTable extends AppCompatActivity {
+
+    private int variableCount;
+    private int[] fColumnValues;
+
+    private String[] minters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.truth_table_formula);
 
+
+        // Assume variableCount is also passed as an Intent extra
+        variableCount = getIntent().getIntExtra("variableCount", 0);
+        fColumnValues = getIntent().getIntArrayExtra("fColumnValues");
+
+        //ilagay sa minters yung f values
+        // Assuming fColumnValues is already filled with values
+        // Initialize minters with the same length as fColumnValues
+        minters = new String[fColumnValues.length];
+
+        // Convert and transfer values
+        for (int i = 0; i < fColumnValues.length; i++) {
+            minters[i] = String.valueOf(fColumnValues[i]);
+        }
+
         //generate table
-        generateTruthTable();
-        generateKmapTable();
-        generateKmapGroupTable();
+        if (fColumnValues != null) {
+            generateTruthTablePreview(variableCount, fColumnValues);
+        }
+
+        generateKmapTable(variableCount);
         dropdownForGroup();
         dropdownForExport();
 
@@ -42,59 +66,107 @@ public class FormulaTruthTable extends AppCompatActivity {
 
 
 
-    private void generateTruthTable() {
+    private void generateTruthTablePreview(int variableCount, int[] fColumnValues) {
         TableLayout tableLayout = findViewById(R.id.tableLayout); // Make sure you have a TableLayout in your XML with this ID
+        tableLayout.removeAllViews(); // Clear the existing table content
 
         // Create a header row
         TableRow headerRow = new TableRow(this);
         headerRow.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
         headerRow.setBackgroundColor(getResources().getColor(R.color.primary));
-        String[] headerTexts = {"A", "B", "C", "m", "F"};
-        for (String headerText : headerTexts) {
+
+        // Define header texts dynamically based on the number of variables
+        // Dynamic header based on the number of variables
+        String[] headerTexts = new String[variableCount + 2]; // +2 for 'm' and 'F' columns
+        for (int i = 0; i < variableCount; i++) {
+            headerTexts[i] = String.valueOf((char) ('A' + i)); // Create header labels dynamically
+        }
+        headerTexts[variableCount] = "m";
+        headerTexts[variableCount + 1] = "F";
+
+        // Add header texts to the header row
+        for (String text : headerTexts) {
             TextView textView = new TextView(this);
-            textView.setText(headerText);
-            textView.setTextColor(getResources().getColor(R.color.white));
+            textView.setText(text);
             textView.setGravity(Gravity.CENTER);
-            textView.setPadding(5, 5, 5, 5);
+            textView.setTextColor(getResources().getColor(R.color.white));
+            textView.setTextSize(16);
+            textView.setPadding(10, 10, 10, 10);
             headerRow.addView(textView);
         }
 
         tableLayout.addView(headerRow);
 
-        // Add data as rows
-        int[][] data = {
-                {0, 0, 0, 0, 0},
-                {0, 0, 1, 1, 1},
-                {0, 0, 1, 1, 1},
-                {0, 0, 1, 1, 1},
-                {0, 0, 1, 1, 1},
-                {0, 0, 1, 1, 1},
-                {1, 1, 1, 7, 1}
-        };
+        // Generate the data for the truth table based on the number of variables
+        int rowCount = (int) Math.pow(2, variableCount); // Calculate the number of rows for the table
+        int[][] rows = new int[rowCount][variableCount + 2]; // Initialize your rows array with the correct size
 
-        for (int[] rowData : data) {
+        for (int i = 0; i < rowCount; i++) {
             TableRow row = new TableRow(this);
+
             row.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
             row.setPaddingRelative(0, 2, 0, 2);
 
-            for (int cellData : rowData) {
+            final int rowIdx = i; // Capture the row index for use in the lambda expression
+
+            for (int j = 0; j < variableCount + 2; j++) { // Iterate over each column
                 TextView textView = new TextView(this);
-                textView.setText(String.valueOf(cellData));
+                if (j < variableCount) { // For variable columns
+                    rows[i][j] = (i / (int) Math.pow(2, variableCount - j - 1)) % 2; // Calculate truth value
+                } else if (j == variableCount) { // For 'm' column
+                    rows[i][j] = i; // 'm' column holds the row number
+                } else if (j == variableCount + 1) {
+                    rows[i][j] = fColumnValues[i];
+                } // 'F' column will be handled separately as it's interactive
+
+                textView.setText(String.valueOf(rows[i][j]));
                 textView.setGravity(Gravity.CENTER);
-                textView.setPadding(5, 5, 5, 5);
-                textView.setTextSize(10);
+                textView.setPadding(10, 10, 10, 10);
+                textView.setTextSize(14);
                 textView.setTextColor(getResources().getColor(R.color.black));
+
                 row.addView(textView);
             }
 
             tableLayout.addView(row);
         }
+
     }
-    private void generateKmapTable() {
-        TableLayout tableLayout = findViewById(R.id.kmapTableLayout);
+
+
+    private void generateKmapTable(int variableCount) {
+        if (variableCount == 2) {
+            String[] headers = {"  ", "B'", "B"};
+            String[][] data = {{"A'", minters[0], minters[1]}, {"A", minters[2], minters[3]}};
+            createTable(headers, data, R.id.kmapTableLayout);
+            createGroupTable(headers, data, R.id.groupTableLayout);
+        } else if (variableCount == 3) {
+            String[] headers = {"  ", "B'C'", "B'C", "BC", "BC'"};
+            String[][] data = {{"A'", minters[0], minters[1], minters[3], minters[2]}, {"A", minters[4], minters[5], minters[7], minters[6]}};
+            createTable(headers, data, R.id.kmapTableLayout);
+            createGroupTable(headers, data, R.id.groupTableLayout);
+        }else if (variableCount == 4) {
+            String[] headers = {"  ", "C'D'", "C'D", "CD", "CD'"};
+            String[][] data = {{"A'B'", minters[0], minters[1], minters[3], minters[2]}, {"A'B", minters[4], minters[5], minters[7], minters[6]}, {"AB", minters[12], minters[13], minters[15], minters[14]}, {"AB'", minters[8], minters[9], minters[11], minters[10]}};
+            createTable(headers, data, R.id.kmapTableLayout);
+            createGroupTable(headers, data, R.id.groupTableLayout);
+        } else if (variableCount == 5) {
+            String[] headers = {"  ", "D'E'", "D'E", "DE", "DE'"};
+            String[][]data = {{"A'B'C'", minters[0], minters[1], minters[3], minters[2]}, {"A'B'C", minters[4], minters[5], minters[7], minters[6]}, {"A'BC", minters[12], minters[13], minters[15], minters[14]}, {"A'BC'", minters[8], minters[9], minters[11], minters[10]}, {"AB'C'", minters[16], minters[17], minters[19], minters[18]}, {"AB'C", minters[20], minters[21], minters[23], minters[22]}, {"ABC", minters[28], minters[29], minters[31], minters[30]}, {"ABC'", minters[24], minters[25], minters[27], minters[26]}};
+            createTable(headers, data, R.id.kmapTableLayout);
+            createGroupTable(headers, data, R.id.groupTableLayout);
+        } else if (variableCount == 6) {
+            String[] headers = {"  ", "E'F'", "E'F", "EF", "EF'"};
+            String[][] data = {{"A'B'C'D'", minters[0], minters[1], minters[3], minters[2]}, {"A'B'C'D", minters[4], minters[5], minters[7], minters[6]}, {"A'B'CD", minters[12], minters[13], minters[15], minters[14]}, {"A'B'CD'", minters[8], minters[9], minters[11], minters[10]}, {"A'BC'D'", minters[16], minters[17], minters[19], minters[18]}, {"A'BC'D", minters[20], minters[21], minters[23], minters[22]}, {"A'BCD", minters[28], minters[29], minters[31], minters[30]}, {"A'BCD'", minters[24], minters[25], minters[27], minters[26]}, {"AB'C'D'", minters[32], minters[33], minters[35], minters[34]}, {"AB'C'D", minters[36], minters[37], minters[39], minters[38]}, {"AB'CD", minters[44], minters[45], minters[47], minters[46]}, {"AB'CD'", minters[40], minters[41], minters[43], minters[42]}, {"ABC'D'", minters[48], minters[49], minters[51], minters[50]}, {"ABC'D", minters[52], minters[53], minters[55], minters[54]}, {"ABCD", minters[60], minters[61], minters[63], minters[62]}, {"ABCD'", minters[56], minters[57], minters[59], minters[58]}};
+            createTable(headers, data, R.id.kmapTableLayout);
+            createGroupTable(headers, data, R.id.groupTableLayout);
+        }
+    }
+
+    private void createTable(String[] headers, String[][] data, int tableLayoutId) {
+        TableLayout tableLayout = findViewById(tableLayoutId);
 
         // Define the header titles
-        String[] headers = {"  ", "B'C'", "B'C", "BC", "BC'"};
 
         // Create a row for the header
         TableRow headerRow = new TableRow(this);
@@ -111,11 +183,6 @@ public class FormulaTruthTable extends AppCompatActivity {
         // Add the header row to the table layout without border
         tableLayout.addView(headerRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
 
-        // Data for the table cells
-        String[][] data = {
-                {"A'", "1", "0", "0", "0"},
-                {"A", "1", "1", "1", "1"}
-        };
 
         // Add data rows
         for (int i = 0; i < data.length; i++) {
@@ -142,11 +209,10 @@ public class FormulaTruthTable extends AppCompatActivity {
         }
 
     }
-    private void generateKmapGroupTable() {
-        TableLayout tableLayout = findViewById(R.id.groupTableLayout);
+    private void createGroupTable(String[] headers, String[][] data, int tableLayoutId) {
+        TableLayout tableLayout = findViewById(tableLayoutId);
 
-        // Define the header titles
-        String[] headers = {"  ", "B'C'", "B'C", "BC", "BC'"};
+
 
         // Create a row for the header
         TableRow headerRow = new TableRow(this);
@@ -162,24 +228,16 @@ public class FormulaTruthTable extends AppCompatActivity {
 
         // Add the header row to the table layout without border
         tableLayout.addView(headerRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-
-        // Data for the table cells
-        String[][] data = {
-                {"A'", "1", "0", "0", "0"},
-                {"A", "1", "1", "1", "1"}
-        };
-
         // Add data rows
-        // Loop through each row
         for (int i = 0; i < data.length; i++) {
             TableRow tr = new TableRow(this);
-            // Loop through each column
             for (int j = 0; j < data[i].length; j++) {
                 TextView tv = new TextView(this);
                 tv.setText(String.valueOf(data[i][j]));
                 tv.setGravity(Gravity.CENTER);
                 tv.setPadding(10, 10, 10, 10);
-
+                tv.setTextColor(getResources().getColor(R.color.primary));
+                // Remove border effect by setting the background to a transparent drawable for the first column
                 // Check the value and set background color accordingly
                 if (data[i][j].equals("1")) {
                     // Set background to primary color
@@ -205,6 +263,9 @@ public class FormulaTruthTable extends AppCompatActivity {
         }
 
     }
+
+
+
     private void dropdownForGroup() {
         Spinner spinner = findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this,
