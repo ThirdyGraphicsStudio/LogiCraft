@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.thirdy.booleanexpression.BooleanExpression.MainBooleanExpression;
@@ -29,7 +30,7 @@ public class Homepage extends Fragment {
         LinearLayout cardViewKarnaughMap = view.findViewById(R.id.cardViewKarnaughMap);
         LinearLayout cardViewBooleanExpression = view.findViewById(R.id.cardViewBooleanExpression);
 
-
+     
         cardViewTruthTable.setOnClickListener(view1 -> {
             startActivity(new Intent(getContext(), MainTruthTable.class));
         });

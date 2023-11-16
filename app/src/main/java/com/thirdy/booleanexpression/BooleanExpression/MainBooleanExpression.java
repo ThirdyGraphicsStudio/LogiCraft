@@ -67,7 +67,9 @@ public class MainBooleanExpression extends AppCompatActivity {
             }
 
             if(!input.isEmpty()){
-                startActivity(new Intent(MainBooleanExpression.this, FormulaBooleanExpression.class));
+                displayEditText.setError("Invalid Input");
+                displayEditText.setFocusable(true);
+
             }
 
 

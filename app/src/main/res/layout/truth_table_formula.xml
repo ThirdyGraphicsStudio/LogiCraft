@@ -44,13 +44,21 @@
             android:fontFamily="@font/poppinsbold"
             />
 
+        <ImageView
+            android:id="@+id/imgPdf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/pdf"
+            android:layout_alignParentRight="true"
+            />
+
 
     </RelativeLayout>
 
 
     <!--    -->
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="none"
@@ -181,6 +189,7 @@
                     android:spinnerMode="dropdown"/>
 
                 <TextView
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/grouping_description"
@@ -203,6 +212,7 @@
                 <!--Group 1-->
 
                 <TextView
+                    android:visibility="gone"
                     android:layout_marginTop="20dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -213,6 +223,7 @@
                     />
 
                 <TextView
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Positions = {4,5,7,6}"
@@ -226,6 +237,8 @@
                     android:text="Simplified Expression = A"
                     android:textSize="12sp"
                     android:textColor="@color/black"
+                    android:visibility="gone"
+
                     android:fontFamily="@font/poppinsregular"
                     />
 
@@ -237,6 +250,8 @@
                     android:layout_height="wrap_content"
                     android:text="Group 2:"
                     android:textSize="12sp"
+                    android:visibility="gone"
+
                     android:textColor="@color/black"
                     android:fontFamily="@font/poppinsregular"
                     />
@@ -246,6 +261,7 @@
                     android:layout_height="wrap_content"
                     android:text="Positions = {1, 2}"
                     android:textSize="12sp"
+                    android:visibility="gone"
                     android:textColor="@color/black"
                     android:fontFamily="@font/poppinsregular"
                     />
@@ -255,6 +271,7 @@
                     android:text="Simplified Expression = B'C"
                     android:textSize="12sp"
                     android:textColor="@color/black"
+                    android:visibility="gone"
                     android:fontFamily="@font/poppinsregular"
                     />
 
@@ -264,8 +281,32 @@
                     android:layout_height="wrap_content"
                     android:text="F = A + B’C"
                     android:textSize="12sp"
+                    android:visibility="gone"
+
                     android:textColor="@color/black"
                     android:fontFamily="@font/poppinsbold"
+                    />
+
+
+
+                <TextView
+                    android:id="@+id/txtResult"
+                    android:layout_marginTop="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/poppinsbold"
+                    />
+
+                <ProgressBar
+                    android:id="@+id/ProgressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    android:layout_marginVertical="20dp"
                     />
 
             </LinearLayout>
@@ -276,6 +317,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginVertical="20dp"
+                android:visibility="gone"
                 >
 
                 <TextView
@@ -328,6 +370,7 @@
 
                 <!--            Table-->
                 <androidx.cardview.widget.CardView
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="10dp"
@@ -358,6 +401,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginBottom="50dp"
+                android:visibility="gone"
                 >
 
                 <TextView
@@ -408,6 +452,6 @@
 
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

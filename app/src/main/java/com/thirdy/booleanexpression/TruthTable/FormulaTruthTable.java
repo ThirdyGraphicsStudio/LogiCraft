@@ -6,18 +6,32 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
+import com.thirdy.booleanexpression.KarnaughMap.FormulaKarnaughMap;
 import com.thirdy.booleanexpression.R;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class FormulaTruthTable extends AppCompatActivity {
 
@@ -26,21 +40,31 @@ public class FormulaTruthTable extends AppCompatActivity {
 
     private String[] minters;
 
+    private TextView txtResult;
+    private ProgressBar progressBar;
+    private ImageView imgPdf;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.truth_table_formula);
-
+        progressBar = findViewById(R.id.ProgressBar);
 
         // Assume variableCount is also passed as an Intent extra
         variableCount = getIntent().getIntExtra("variableCount", 0);
         fColumnValues = getIntent().getIntArrayExtra("fColumnValues");
+        txtResult = findViewById(R.id.txtResult);
+
+        imgPdf = findViewById(R.id.imgPdf);
+
+
+        imgPdf.setOnClickListener(view -> {
+            Toast.makeText(this, "SAVED AS PDF", Toast.LENGTH_SHORT).show();
+        });
 
         //ilagay sa minters yung f values
         // Assuming fColumnValues is already filled with values
         // Initialize minters with the same length as fColumnValues
         minters = new String[fColumnValues.length];
-
         // Convert and transfer values
         for (int i = 0; i < fColumnValues.length; i++) {
             minters[i] = String.valueOf(fColumnValues[i]);
@@ -51,7 +75,7 @@ public class FormulaTruthTable extends AppCompatActivity {
             generateTruthTablePreview(variableCount, fColumnValues);
         }
 
-        generateKmapTable(variableCount);
+        generateKmapTable(variableCount, "1");
         dropdownForGroup();
         dropdownForExport();
 
@@ -134,37 +158,38 @@ public class FormulaTruthTable extends AppCompatActivity {
     }
 
 
-    private void generateKmapTable(int variableCount) {
+    private void generateKmapTable(int variableCount, String group) {
         if (variableCount == 2) {
             String[] headers = {"  ", "B'", "B"};
             String[][] data = {{"A'", minters[0], minters[1]}, {"A", minters[2], minters[3]}};
             createTable(headers, data, R.id.kmapTableLayout);
-            createGroupTable(headers, data, R.id.groupTableLayout);
+            createGroupTable(headers, data, R.id.groupTableLayout, group);
         } else if (variableCount == 3) {
             String[] headers = {"  ", "B'C'", "B'C", "BC", "BC'"};
             String[][] data = {{"A'", minters[0], minters[1], minters[3], minters[2]}, {"A", minters[4], minters[5], minters[7], minters[6]}};
             createTable(headers, data, R.id.kmapTableLayout);
-            createGroupTable(headers, data, R.id.groupTableLayout);
+            createGroupTable(headers, data, R.id.groupTableLayout, group);
         }else if (variableCount == 4) {
             String[] headers = {"  ", "C'D'", "C'D", "CD", "CD'"};
             String[][] data = {{"A'B'", minters[0], minters[1], minters[3], minters[2]}, {"A'B", minters[4], minters[5], minters[7], minters[6]}, {"AB", minters[12], minters[13], minters[15], minters[14]}, {"AB'", minters[8], minters[9], minters[11], minters[10]}};
             createTable(headers, data, R.id.kmapTableLayout);
-            createGroupTable(headers, data, R.id.groupTableLayout);
+            createGroupTable(headers, data, R.id.groupTableLayout, group);
         } else if (variableCount == 5) {
             String[] headers = {"  ", "D'E'", "D'E", "DE", "DE'"};
             String[][]data = {{"A'B'C'", minters[0], minters[1], minters[3], minters[2]}, {"A'B'C", minters[4], minters[5], minters[7], minters[6]}, {"A'BC", minters[12], minters[13], minters[15], minters[14]}, {"A'BC'", minters[8], minters[9], minters[11], minters[10]}, {"AB'C'", minters[16], minters[17], minters[19], minters[18]}, {"AB'C", minters[20], minters[21], minters[23], minters[22]}, {"ABC", minters[28], minters[29], minters[31], minters[30]}, {"ABC'", minters[24], minters[25], minters[27], minters[26]}};
             createTable(headers, data, R.id.kmapTableLayout);
-            createGroupTable(headers, data, R.id.groupTableLayout);
+            createGroupTable(headers, data, R.id.groupTableLayout, group);
         } else if (variableCount == 6) {
             String[] headers = {"  ", "E'F'", "E'F", "EF", "EF'"};
             String[][] data = {{"A'B'C'D'", minters[0], minters[1], minters[3], minters[2]}, {"A'B'C'D", minters[4], minters[5], minters[7], minters[6]}, {"A'B'CD", minters[12], minters[13], minters[15], minters[14]}, {"A'B'CD'", minters[8], minters[9], minters[11], minters[10]}, {"A'BC'D'", minters[16], minters[17], minters[19], minters[18]}, {"A'BC'D", minters[20], minters[21], minters[23], minters[22]}, {"A'BCD", minters[28], minters[29], minters[31], minters[30]}, {"A'BCD'", minters[24], minters[25], minters[27], minters[26]}, {"AB'C'D'", minters[32], minters[33], minters[35], minters[34]}, {"AB'C'D", minters[36], minters[37], minters[39], minters[38]}, {"AB'CD", minters[44], minters[45], minters[47], minters[46]}, {"AB'CD'", minters[40], minters[41], minters[43], minters[42]}, {"ABC'D'", minters[48], minters[49], minters[51], minters[50]}, {"ABC'D", minters[52], minters[53], minters[55], minters[54]}, {"ABCD", minters[60], minters[61], minters[63], minters[62]}, {"ABCD'", minters[56], minters[57], minters[59], minters[58]}};
             createTable(headers, data, R.id.kmapTableLayout);
-            createGroupTable(headers, data, R.id.groupTableLayout);
+            createGroupTable(headers, data, R.id.groupTableLayout, group);
         }
     }
 
     private void createTable(String[] headers, String[][] data, int tableLayoutId) {
         TableLayout tableLayout = findViewById(tableLayoutId);
+        tableLayout.removeAllViews();
 
         // Define the header titles
 
@@ -209,11 +234,11 @@ public class FormulaTruthTable extends AppCompatActivity {
         }
 
     }
-    private void createGroupTable(String[] headers, String[][] data, int tableLayoutId) {
+    private void createGroupTable(String[] headers, String[][] data, int tableLayoutId, String group) {
         TableLayout tableLayout = findViewById(tableLayoutId);
 
 
-
+        tableLayout.removeAllViews();
         // Create a row for the header
         TableRow headerRow = new TableRow(this);
         for (String header : headers) {
@@ -239,11 +264,11 @@ public class FormulaTruthTable extends AppCompatActivity {
                 tv.setTextColor(getResources().getColor(R.color.primary));
                 // Remove border effect by setting the background to a transparent drawable for the first column
                 // Check the value and set background color accordingly
-                if (data[i][j].equals("1")) {
+                if (data[i][j].equals(group)) {
                     // Set background to primary color
                     tv.setBackgroundColor(getResources().getColor(R.color.primary));
                     tv.setTextColor(getResources().getColor(R.color.white)); // Assuming you want white text on primary background
-                } else if (data[i][j].equals("0")) {
+                } else  {
                     // Set background to white
                     tv.setBackgroundColor(getResources().getColor(android.R.color.white));
                     tv.setTextColor(getResources().getColor(R.color.black)); // Assuming you want black text on white background
@@ -261,7 +286,6 @@ public class FormulaTruthTable extends AppCompatActivity {
             // Add the TableRow to the TableLayout
             tableLayout.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
         }
-
     }
 
 
@@ -301,7 +325,23 @@ public class FormulaTruthTable extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // Get selected item
                 String selectedItem = parent.getItemAtPosition(position).toString();
-                // Do something with the selected item
+                String fColumnValuesString = Arrays.stream(fColumnValues)
+                        .mapToObj(String::valueOf)
+                        .collect(Collectors.joining(", "));
+
+                if(selectedItem.equals("SOP")) {
+                    txtResult.setText("");
+                    generateKmapTable(variableCount, "1");
+                    sendRequest("I need to solve a " + variableCount + "-variable K-Map with the following minterms:" + fColumnValuesString + " . Can you group the minterms, simplify the expression, and give me the final SOP expression?");
+                    progressBar.setVisibility(View.VISIBLE);
+                }else {
+                    txtResult.setText("");
+                    generateKmapTable(variableCount, "0");
+                    progressBar.setVisibility(View.VISIBLE);
+                    sendRequest("I need to solve a " + variableCount + "-variable K-Map with the following minterms:" + fColumnValuesString + " . Can you group the minterms, simplify the expression, and give me the final POS expression?");
+
+
+                }
             }
 
             @Override
@@ -345,7 +385,8 @@ public class FormulaTruthTable extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // Get selected item
                 String selectedItem = parent.getItemAtPosition(position).toString();
-                // Do something with the selected item
+
+
             }
 
             @Override
@@ -353,5 +394,72 @@ public class FormulaTruthTable extends AppCompatActivity {
             }
         });
     }
+
+
+    private void sendRequest(String content) {
+        String apiKey = "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"; // Replace with your actual API key
+
+        new Thread(() -> {
+            try {
+                URL url = new URL("https://api.openai.com/v1/chat/completions");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Authorization", "Bearer " + apiKey);
+                conn.setDoOutput(true);
+
+                JSONObject payload = new JSONObject();
+                payload.put("model", "gpt-3.5-turbo");
+
+                JSONArray messages = new JSONArray();
+
+                JSONObject systemMessage = new JSONObject();
+                systemMessage.put("role", "system");
+                systemMessage.put("content", "You are an assistant skilled in digital logic design. When given minterms of a 4-variable Karnaugh Map, your task is to identify all possible groups of 1s, simplify the expression using the Sum of Products (SOP) or POS base on user instruction method, and provide the final expression. You should return the results in a structured JSON format, including the positions of the groups, the simplified expressions for each group, and the final SOP expression.  designed to output JSON. \\n, you produce many group depend on variable   \\n example only:  {'Group++': {'Position': [answer], 'Simplified Expression': 'answer'}, 'Group++': {'Position': [answer], 'Simplified Expression': 'answer'}, the dami ng group is depend sa answer 'FINAL EXPRESSION': 'F = answer} please check the answer on http://www.32x8.com/");
+                messages.put(systemMessage);
+
+                JSONObject userMessage = new JSONObject();
+                userMessage.put("role", "user");
+                userMessage.put("content", content); // The content passed to this method
+                messages.put(userMessage);
+
+                payload.put("messages", messages);
+
+                try (java.io.OutputStream os = conn.getOutputStream()) {
+                    byte[] input = payload.toString().getBytes("UTF-8");
+                    os.write(input, 0, input.length);
+                }
+
+                int responseCode = conn.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    try (Scanner scanner = new Scanner(conn.getInputStream())) {
+                        String jsonResponse = scanner.useDelimiter("\\A").next();
+                        JSONObject obj = new JSONObject(jsonResponse);
+                        JSONArray choices = obj.getJSONArray("choices");
+                        JSONObject firstChoice = choices.getJSONObject(0);
+                        String messageContent = firstChoice.getString("message"); // Assuming the response structure
+                        JSONObject messageJson = new JSONObject(messageContent);
+                        String contents = messageJson.getString("content");
+                        Log.d("messageContent", messageContent);
+
+                        runOnUiThread(() -> {
+                            // Handle the response content
+                            // For example, you can start a new activity with the response
+                            txtResult.setText(contents);
+                            progressBar.setVisibility(View.GONE);
+                        });
+                    }
+                } else {
+                    progressBar.setVisibility(View.GONE);
+                    runOnUiThread(() -> Toast.makeText(FormulaTruthTable.this, "Failed with response code: " + responseCode, Toast.LENGTH_LONG).show());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                progressBar.setVisibility(View.GONE);
+                runOnUiThread(() -> Toast.makeText(FormulaTruthTable.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show());
+            }
+        }).start();
+    }
+
 
 }
