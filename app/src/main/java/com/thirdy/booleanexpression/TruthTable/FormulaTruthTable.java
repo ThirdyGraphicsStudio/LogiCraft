@@ -351,7 +351,6 @@ public class FormulaTruthTable extends AppCompatActivity {
                     }
 
                     // Now you can use the minterms string
-                    answer(minterms, "");
 
                     txtResult.setText("");
                     answer(minterms, "");
@@ -374,8 +373,6 @@ public class FormulaTruthTable extends AppCompatActivity {
                         minterms = minterms.substring(0, minterms.length() - 1);
                     }
 
-                    // Now you can use the minterms string
-                    answer(minterms, "");
 
                     txtResult.setText("");
                     answer(minterms, "");
@@ -425,7 +422,6 @@ public class FormulaTruthTable extends AppCompatActivity {
                 // Get selected item
                 String selectedItem = parent.getItemAtPosition(position).toString();
 
-
             }
 
             @Override
@@ -435,70 +431,6 @@ public class FormulaTruthTable extends AppCompatActivity {
     }
 
 
-    private void sendRequest(String content) {
-        String apiKey = "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"; // Replace with your actual API key
-
-        new Thread(() -> {
-            try {
-                URL url = new URL("https://api.openai.com/v1/chat/completions");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setRequestProperty("Authorization", "Bearer " + apiKey);
-                conn.setDoOutput(true);
-
-                JSONObject payload = new JSONObject();
-                payload.put("model", "gpt-3.5-turbo");
-
-                JSONArray messages = new JSONArray();
-
-                JSONObject systemMessage = new JSONObject();
-                systemMessage.put("role", "system");
-                systemMessage.put("content", "You are an assistant skilled in digital logic design. When given minterms of a 4-variable Karnaugh Map, your task is to identify all possible groups of 1s, simplify the expression using the Sum of Products (SOP) or POS base on user instruction method, and provide the final expression. You should return the results in a structured JSON format, including the positions of the groups, the simplified expressions for each group, and the final SOP expression.  designed to output JSON. \\n, you produce many group depend on variable   \\n example only:  {'Group++': {'Position': [answer], 'Simplified Expression': 'answer'}, 'Group++': {'Position': [answer], 'Simplified Expression': 'answer'}, the dami ng group is depend sa answer 'FINAL EXPRESSION': 'F = answer} please check the answer on http://www.32x8.com/");
-                messages.put(systemMessage);
-
-                JSONObject userMessage = new JSONObject();
-                userMessage.put("role", "user");
-                userMessage.put("content", content); // The content passed to this method
-                messages.put(userMessage);
-
-                payload.put("messages", messages);
-
-                try (java.io.OutputStream os = conn.getOutputStream()) {
-                    byte[] input = payload.toString().getBytes("UTF-8");
-                    os.write(input, 0, input.length);
-                }
-
-                int responseCode = conn.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    try (Scanner scanner = new Scanner(conn.getInputStream())) {
-                        String jsonResponse = scanner.useDelimiter("\\A").next();
-                        JSONObject obj = new JSONObject(jsonResponse);
-                        JSONArray choices = obj.getJSONArray("choices");
-                        JSONObject firstChoice = choices.getJSONObject(0);
-                        String messageContent = firstChoice.getString("message"); // Assuming the response structure
-                        JSONObject messageJson = new JSONObject(messageContent);
-                        String contents = messageJson.getString("content");
-                        Log.d("messageContent", messageContent);
-
-                        runOnUiThread(() -> {
-                            // Handle the response content
-                            // For example, you can start a new activity with the response
-                            txtResult.setText(contents);
-                            progressBar.setVisibility(View.GONE);
-                        });
-                    }
-                } else {
-                    progressBar.setVisibility(View.GONE);
-                    runOnUiThread(() -> Toast.makeText(FormulaTruthTable.this, "Failed with response code: " + responseCode, Toast.LENGTH_LONG).show());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                progressBar.setVisibility(View.GONE);
-                runOnUiThread(() -> Toast.makeText(FormulaTruthTable.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show());
-            }
-        }).start();
-    }
 
 
 

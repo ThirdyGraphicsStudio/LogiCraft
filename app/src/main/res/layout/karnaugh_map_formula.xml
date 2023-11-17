@@ -191,6 +191,8 @@
                     android:fontFamily="@font/poppinsregular"
                     />
 
+
+
                 <!--            Group Table-->
                 <!--            TODO Table-->
                 <TableLayout
@@ -235,6 +237,28 @@
                     />
 
                 <!--Group 1-->
+
+
+                <TextView
+                    android:id="@+id/txtSolution"
+                    android:layout_marginTop="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="12sp"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/poppinsregular"
+                    />
+
+                <TextView
+                    android:id="@+id/txtAnswer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/poppinssemibold"
+                    />
 
                 <TextView
                     android:visibility="gone"

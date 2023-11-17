@@ -20,6 +20,7 @@ import com.thirdy.booleanexpression.Adapter.MyInterface;
 import com.thirdy.booleanexpression.BooleanExpression.FormulaBooleanExpression;
 import com.thirdy.booleanexpression.DatabaseHelper.HistoryTaskTable;
 import com.thirdy.booleanexpression.KarnaughMap.FormulaKarnaughMap;
+import com.thirdy.booleanexpression.MainActivity;
 import com.thirdy.booleanexpression.Model.HistoryModel;
 import com.thirdy.booleanexpression.R;
 import com.thirdy.booleanexpression.TruthTable.FormulaTruthTable;
@@ -95,6 +96,14 @@ public class History extends Fragment implements MyInterface {
             Log.d("Data", "No data found");
         }
 
+
+        for(int i=0; i < historyModels.size(); i++){
+            Log.d("History", "historyData: " + historyModels.get(i).getMinterms());
+        }
+
+        Log.d("History", "0: " + historyModels.get(0).getMinterms());
+
+
 //        historyModels.add(new HistoryModel(1, "Fri Oct 27 01:50:05 GMT 2023", "Truth Table Input"));
 //        historyModels.add(new HistoryModel(1, "Fri Oct 27 01:50:05 GMT 2023", "Boolean Expression Input"));
 //        historyModels.add(new HistoryModel(1, "Fri Oct 28 01:50:05 GMT 2023", "Karnaugh Map Input"));
@@ -148,46 +157,70 @@ public class History extends Fragment implements MyInterface {
 
     @Override
     public void onItemClick(int pos, String categories) {
-        String expression = historyModels.get(pos).getName();
-        int variableCount = historyModels.get(pos).getVariable();
-        Toast.makeText(getContext(), "expression", Toast.LENGTH_SHORT).show();
-        Intent intent = null;
+        if (!categories.equals("history")) return;
+        HistoryModel selectedHistory = historyModels.get(pos -1);
+        String expression = selectedHistory.getName();
+        int variableCount = selectedHistory.getVariable();
+        Intent intent;
 
-        if(expression.equals("Truth Table Input")){
-            intent = new Intent(getContext(), FormulaTruthTable.class);
-        }else if(expression.equals("Boolean Expression Input")){
-            intent = new Intent(getContext(), FormulaBooleanExpression.class);
-
-        } else if (expression.equals("Karnaugh Map Input")) {
-            intent = new Intent(getContext(), FormulaKarnaughMap.class);
-
-        }else{
-            intent = new Intent(getContext(), FormulaKarnaughMap.class);
-
+        switch (expression) {
+            case "Truth Table Input":
+                intent = new Intent(getContext(), FormulaTruthTable.class);
+                intent.putExtra("fColumnValues", processMintermsInt(selectedHistory.getMinterms(), true));
+                break;
+            case "Boolean Expression Input":
+                intent = new Intent(getContext(), FormulaBooleanExpression.class);
+                // Additional logic if needed
+                break;
+            case "Karnaugh Map Input":
+                intent = new Intent(getContext(), FormulaKarnaughMap.class);
+                intent.putExtra("fColumnValues", processMinterms(selectedHistory.getMinterms(), false));
+                break;
+            default:
+                intent = new Intent(getContext(), MainActivity.class);
+                break;
         }
 
-       //the  minimers
-        String x = historyModels.get(pos).getMinterms();
+        intent.putExtra("variableCount", variableCount);
+        startActivity(intent);
+    }
 
-        // Remove brackets and trim spaces
-        x = x.replace("[", "").replace("]", "").trim();
+    private String[] processMinterms(String minterms, boolean asIntegers) {
+        String[] numbers = minterms.replace("[", "").replace("]", "").trim().split(",");
+        String[] fColumnValues = new String[numbers.length];
 
-        // Split the string by commas
-        String[] numbers = x.split(",");
+        for (int i = 0; i < numbers.length; i++) {
+            if (asIntegers) {
+                try {
+                    fColumnValues[i] = String.valueOf(Integer.parseInt(numbers[i].trim()));
+                } catch (NumberFormatException e) {
+                    Log.e("History", "Error parsing integer: " + numbers[i], e);
+                }
+            } else {
+                fColumnValues[i] = numbers[i].trim();
+            }
+        }
 
-        // Initialize the array of integers
+        return fColumnValues;
+    }
+
+    private int[] processMintermsInt(String minterms, boolean asIntegers) {
+        String[] numbers = minterms.replace("[", "").replace("]", "").trim().split(",");
         int[] fColumnValues = new int[numbers.length];
 
-        // Parse and store each number
         for (int i = 0; i < numbers.length; i++) {
-            fColumnValues[i] = Integer.parseInt(numbers[i].trim());
+            if (asIntegers) {
+                try {
+                    fColumnValues[i] = Integer.parseInt(numbers[i].trim());
+                } catch (NumberFormatException e) {
+                    Log.e("History", "Error parsing integer: " + numbers[i], e);
+                }
+            } else {
+                fColumnValues[i] = Integer.parseInt(numbers[i].trim());
+            }
         }
 
-        intent.putExtra("fColumnValues", fColumnValues); // Pass the "F" column values
-        intent.putExtra("variableCount", variableCount); // Pass the number of variables
-        // Start the new activity
-        startActivity(intent);
-
+        return fColumnValues;
     }
 
 }

@@ -19,6 +19,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.thirdy.booleanexpression.Algorithm.Solver;
+import com.thirdy.booleanexpression.Algorithm.Term;
 import com.thirdy.booleanexpression.R;
 
 import org.json.JSONArray;
@@ -27,6 +29,7 @@ import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class FormulaKarnaughMap extends AppCompatActivity {
@@ -36,13 +39,16 @@ public class FormulaKarnaughMap extends AppCompatActivity {
     private ProgressBar progressBar;
     private TextView txtResult;
     private  ImageView imgPdf;
+    private TextView txtSolution;
+    private TextView txtAnswer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.karnaugh_map_formula);
 
         imgPdf = findViewById(R.id.imgPdf);
-
+        txtSolution = findViewById(R.id.txtSolution);
+        txtAnswer = findViewById(R.id.txtAnswer);
 
         imgPdf.setOnClickListener(view -> {
             Toast.makeText(this, "SAVED AS PDF", Toast.LENGTH_SHORT).show();
@@ -61,13 +67,19 @@ public class FormulaKarnaughMap extends AppCompatActivity {
         variableCount = getIntent().getIntExtra("variableCount", 0);
         fColumnValues = getIntent().getStringArrayExtra("fColumnValues");
 
+//        for (int i = 0; i < fColumnValues.length; i++) {
+//            Log.d("checkdito", fColumnValues[i]);
+//        }
+
 
         minters = new String[fColumnValues.length];
-        Log.d("minters", fColumnValues.toString());
+        Log.d("checkdito", fColumnValues.toString());
 
         // Convert and transfer values
         for (int i = 0; i < fColumnValues.length; i++) {
             minters[i] = fColumnValues[i];
+            Log.d("minters", fColumnValues[i]);
+
         }
 
         generateKmapTable(variableCount, "1");
@@ -492,16 +504,65 @@ public class FormulaKarnaughMap extends AppCompatActivity {
                 // Do something with the selected item
                 String fColumnValuesString = String.join(", ", fColumnValues);
 
+
+                String dontcares = "";
+                for (int i = 0; i < fColumnValues.length; i++) {
+                    if (fColumnValues[i].equals("x")) {
+                        dontcares += i + " ";
+                    }
+                }
+
+                // Optional: Remove the trailing space
+                if (!dontcares.isEmpty()) {
+                    dontcares = dontcares.substring(0, dontcares.length() - 1);
+                }
+
+
+
                 if(selectedItem.equals("SOP")) {
-                    txtResult.setText("");
                     generateKmapTable(variableCount, "1");
-                    sendRequest("I need to solve a " + variableCount + "-variable K-Map with the following minterms:" + fColumnValuesString + " . Can you group the minterms, simplify the expression, and give me the final SOP expression?");
-                    progressBar.setVisibility(View.VISIBLE);
+
+                    String minterms = "";
+                    for (int i = 0; i < fColumnValues.length; i++) {
+                        if (fColumnValues[i].equals("1")) {
+                            minterms += i + " ";
+                        }
+                    }
+
+
+                    // Optional: Remove the trailing space
+                    if (!minterms.isEmpty()) {
+                        minterms = minterms.substring(0, minterms.length() - 1);
+                    }
+
+                    // Now you can use the minterms string
+
+                    txtResult.setText("");
+                    Log.d("minterms", minterms);
+                    answer(minterms, dontcares);
+
+
+
                 }else {
                     txtResult.setText("");
                     generateKmapTable(variableCount, "0");
-                    progressBar.setVisibility(View.VISIBLE);
-                    sendRequest("I need to solve a " + variableCount + "-variable K-Map with the following minterms:" + fColumnValuesString + " . Can you group the minterms, simplify the expression, and give me the final POS expression?");
+
+                    String minterms = "";
+                    for (int i = 0; i < fColumnValues.length; i++) {
+                        if (fColumnValues[i].equals("0")) {
+                            minterms += i + " ";
+                        }
+                    }
+
+                    // Optional: Remove the trailing space
+                    if (!minterms.isEmpty()) {
+                        minterms = minterms.substring(0, minterms.length() - 1);
+                    }
+
+                    // Now you can use the minterms string
+
+                    txtResult.setText("");
+                    answer(minterms, dontcares);
 
 
                 }
@@ -558,70 +619,6 @@ public class FormulaKarnaughMap extends AppCompatActivity {
     }
 
 
-    private void sendRequest(String content) {
-        String apiKey = "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"; // Replace with your actual API key
-
-        new Thread(() -> {
-            try {
-                URL url = new URL("https://api.openai.com/v1/chat/completions");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setRequestProperty("Authorization", "Bearer " + apiKey);
-                conn.setDoOutput(true);
-
-                JSONObject payload = new JSONObject();
-                payload.put("model", "gpt-3.5-turbo");
-
-                JSONArray messages = new JSONArray();
-
-                JSONObject systemMessage = new JSONObject();
-                systemMessage.put("role", "system");
-                systemMessage.put("content", "You are an assistant skilled in digital logic design. When given minterms of a 4-variable Karnaugh Map, your task is to identify all possible groups of 1s, simplify the expression using the Sum of Products (SOP) or POS base on user instruction method, and provide the final expression. You should return the results in a structured JSON format, including the positions of the groups, the simplified expressions for each group, and the final SOP expression.  designed to output JSON. \\n, you produce many group depend on variable   \\n example only:  {'Group++': {'Position': [answer], 'Simplified Expression': 'answer'}, 'Group++': {'Position': [answer], 'Simplified Expression': 'answer'}, the dami ng group is depend sa answer 'FINAL EXPRESSION': 'F = answer} please check the answer on http://www.32x8.com/");
-                messages.put(systemMessage);
-
-                JSONObject userMessage = new JSONObject();
-                userMessage.put("role", "user");
-                userMessage.put("content", content); // The content passed to this method
-                messages.put(userMessage);
-
-                payload.put("messages", messages);
-
-                try (java.io.OutputStream os = conn.getOutputStream()) {
-                    byte[] input = payload.toString().getBytes("UTF-8");
-                    os.write(input, 0, input.length);
-                }
-
-                int responseCode = conn.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    try (Scanner scanner = new Scanner(conn.getInputStream())) {
-                        String jsonResponse = scanner.useDelimiter("\\A").next();
-                        JSONObject obj = new JSONObject(jsonResponse);
-                        JSONArray choices = obj.getJSONArray("choices");
-                        JSONObject firstChoice = choices.getJSONObject(0);
-                        String messageContent = firstChoice.getString("message"); // Assuming the response structure
-                        JSONObject messageJson = new JSONObject(messageContent);
-                        String contents = messageJson.getString("content");
-                        Log.d("messageContent", messageContent);
-
-                        runOnUiThread(() -> {
-                            // Handle the response content
-                            // For example, you can start a new activity with the response
-                            txtResult.setText(contents);
-                            progressBar.setVisibility(View.GONE);
-                        });
-                    }
-                } else {
-                    progressBar.setVisibility(View.GONE);
-                    runOnUiThread(() -> Toast.makeText(FormulaKarnaughMap.this, "Failed with response code: " + responseCode, Toast.LENGTH_LONG).show());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                progressBar.setVisibility(View.GONE);
-                runOnUiThread(() -> Toast.makeText(FormulaKarnaughMap.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show());
-            }
-        }).start();
-    }
 
     // Example method to parse and format the JSON response
     private String formatResponse(String jsonResponse) {
@@ -648,6 +645,62 @@ public class FormulaKarnaughMap extends AppCompatActivity {
             return "Error parsing the response.";
         }
     }
+
+    public void answer(String minterms, String dontCares) {
+
+
+        Solver s = new Solver(minterms, dontCares);
+
+        s.solve();
+        s.printResults();
+
+        ArrayList<ArrayList<Term>[]> s1 = s.step1;
+        StringBuilder builder = new StringBuilder();
+
+        // to print 1st step
+        for (int i = 0; i < s1.size(); i++) {
+            builder.append("Step ").append(i + 1).append("\n");
+            for (int j = 0; j < s1.get(i).length; j++) {
+                for (int k = 0; k < s1.get(i)[j].size(); k++) {
+                    String stepString = s1.get(i)[j].get(k).getString();
+                    builder.append(stepString);
+                    if (s.taken_step1.size() > i && s.taken_step1.get(i).contains(stepString)) {
+                        builder.append(" taken");
+                    }
+                    builder.append("\n");
+                }
+                builder.append("---------------------------\n");
+            }
+            builder.append("\n");
+        }
+
+        // Printing step2
+        for (int k = 0; k < s.step2.size(); k++) {
+            String[][] step2 = s.step2.get(k);
+            for (int i = 0; i < step2.length; i++) {
+                for (int j = 0; j < step2[0].length; j++) {
+                    builder.append(step2[i][j]).append("  ");
+                }
+                builder.append("\n");
+            }
+            builder.append("\n");
+        }
+
+        // Printing petrickKey
+        for (int i = 0; i < s.petrickKey.size(); i++) {
+            builder.append(s.petrickKey.get(i)).append("\n");
+        }
+
+        // Printing step3
+        for (int i = 0; i < s.step3.size(); i++) {
+            builder.append(s.step3.get(i)).append("\n");
+        }
+
+        Log.d("StepLog", builder.toString());
+        txtSolution.setText(builder.toString());
+        txtAnswer.setText(s.printResults());
+    }
+
 
 
 

@@ -1,6 +1,7 @@
 package com.thirdy.booleanexpression.Adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ((HeaderViewHolder) holder).txtDate.setText(historyModels.get(position).getDate());
         } else {
             ((MyViewHolder) holder).txtHistoryName.setText(historyModels.get(position).getName());
+
         }
     }
 
@@ -61,11 +63,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public MyViewHolder(@NonNull View itemView, MyInterface myInterfaces) {
             super(itemView);
             txtHistoryName = itemView.findViewById(R.id.txtHistoryName);
+
+            if (myInterfaces == null) {
+                Log.d("HistoryAdapter", "MyInterface is null");
+            }
+
             itemView.setOnClickListener(view -> {
                 if(myInterfaces != null ){
                     int pos = getAdapterPosition();
                     if(pos != RecyclerView.NO_POSITION){
-                        myInterfaces.onItemClick(pos, "categories");
+                        myInterfaces.onItemClick(pos, "history");
                     }
                 }
             });
@@ -76,7 +83,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         TextView txtDate;
         public HeaderViewHolder(@NonNull View itemView) {
             super(itemView);
-            txtDate = itemView.findViewById(R.id.txtDate); // make sure this ID exists in header_layout.xml
+            txtDate = itemView.findViewById(R.id.txtDate);
         }
     }
 }

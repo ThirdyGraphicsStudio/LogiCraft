@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.google.android.material.button.MaterialButton;
 import com.thirdy.booleanexpression.Adapter.KarnaughAdapter;
 import com.thirdy.booleanexpression.Adapter.MyInterface;
+import com.thirdy.booleanexpression.DatabaseHelper.HistoryTaskTable;
 import com.thirdy.booleanexpression.Model.KarnaughModel;
 import com.thirdy.booleanexpression.R;
 import com.thirdy.booleanexpression.TruthTable.FormulaTruthTable;
@@ -81,6 +82,11 @@ public class MainKarnaughMap extends AppCompatActivity implements MyInterface {
     private void generateFinal() {
 
         String[] fColumnValues ;
+
+        for(int x=0; x < karnaughModels.size(); x++){
+            Log.d("TAG", "all + thirdy"  + karnaughModels.get(x).getList());
+        }
+
 
         if(variables == 2){
             fColumnValues = new String[4];
@@ -220,6 +226,11 @@ public class MainKarnaughMap extends AppCompatActivity implements MyInterface {
             fColumnValues = new String[0];
         }
 
+        for (int i = 0; i < fColumnValues.length; i++) {
+            Log.d("TAG", "fcolumn"  + fColumnValues[i]);
+        }
+        HistoryTaskTable historyTaskTable = new HistoryTaskTable(this);
+        historyTaskTable.insertData("Karnaugh Map Input", Arrays.toString(fColumnValues), variables);
 
         Intent intent = new Intent(MainKarnaughMap.this, FormulaKarnaughMap.class);
         intent.putExtra("fColumnValues", fColumnValues); // Pass the "F" column values
@@ -239,8 +250,10 @@ public class MainKarnaughMap extends AppCompatActivity implements MyInterface {
     private void set4Variables() {
         karnaughModels.clear();
         String[] arrays = {"0", "0", "0", "0","0", "0", "0", "0"};
+        String[] arrays2 = {"0", "0", "0", "0","0", "0", "0", "0"};
+
         karnaughModels.add(new KarnaughModel("A'B'", "A'B", "0", "1", "3", "2", "4", "5", "7", "6", Arrays.asList(arrays)));
-        karnaughModels.add(new KarnaughModel("AB", "AB'", "12", "13", "15", "14", "8", "9", "11", "10", Arrays.asList(arrays)));
+        karnaughModels.add(new KarnaughModel("AB", "AB'", "12", "13", "15", "14", "8", "9", "11", "10", Arrays.asList(arrays2)));
 
         recyclerView.setAdapter(karnaughAdapter);
     }
@@ -249,10 +262,15 @@ public class MainKarnaughMap extends AppCompatActivity implements MyInterface {
     private void set5Variables() {
         karnaughModels.clear();
         String[] arrays = {"0", "0", "0", "0","0", "0", "0", "0"};
+        String[] array2 = {"0", "0", "0", "0","0", "0", "0", "0"};
+        String[] array3 = {"0", "0", "0", "0","0", "0", "0", "0"};
+        String[] array4 = {"0", "0", "0", "0","0", "0", "0", "0"};
+
+
         karnaughModels.add(new KarnaughModel("A'B'C'", "A'B'C", "0", "1", "3", "2", "4", "5", "7", "6", Arrays.asList(arrays)));
-        karnaughModels.add(new KarnaughModel("A'BC", "A'BC'", "12", "13", "15", "14", "8", "9", "11", "10", Arrays.asList(arrays)));
-        karnaughModels.add(new KarnaughModel("AB'C'", "AB'C", "16", "17", "19", "18", "20", "21", "23", "22", Arrays.asList(arrays)));
-        karnaughModels.add(new KarnaughModel("ABC", "ABC''", "28", "29", "31", "30", "24", "25", "27", "26", Arrays.asList(arrays)));
+        karnaughModels.add(new KarnaughModel("A'BC", "A'BC'", "12", "13", "15", "14", "8", "9", "11", "10", Arrays.asList(array2)));
+        karnaughModels.add(new KarnaughModel("AB'C'", "AB'C", "16", "17", "19", "18", "20", "21", "23", "22", Arrays.asList(array3)));
+        karnaughModels.add(new KarnaughModel("ABC", "ABC''", "28", "29", "31", "30", "24", "25", "27", "26", Arrays.asList(array4)));
 
         recyclerView.setAdapter(karnaughAdapter);
     }
@@ -261,14 +279,22 @@ public class MainKarnaughMap extends AppCompatActivity implements MyInterface {
     private void set6Variables() {
         karnaughModels.clear();
         String[] arrays = {"0", "0", "0", "0","0", "0", "0", "0"};
+        String[] array1 = {"0", "0", "0", "0","0", "0", "0", "0"};
+        String[] array2 = {"0", "0", "0", "0","0", "0", "0", "0"};
+        String[] array3 = {"0", "0", "0", "0","0", "0", "0", "0"};
+        String[] array4 = {"0", "0", "0", "0","0", "0", "0", "0"};
+        String[] array5 = {"0", "0", "0", "0","0", "0", "0", "0"};
+        String[] array6 = {"0", "0", "0", "0","0", "0", "0", "0"};
+        String[] array7 = {"0", "0", "0", "0","0", "0", "0", "0"};
         karnaughModels.add(new KarnaughModel("A'B'C'D'", "A'B'C'D", "0", "1", "3", "2", "4", "5", "7", "6", Arrays.asList(arrays)));
-        karnaughModels.add(new KarnaughModel("A'B'CD", "A'B'CD''", "12", "13", "15", "14", "8", "9", "11", "10", Arrays.asList(arrays)));
-        karnaughModels.add(new KarnaughModel("A'BC'D''", "A'BC'D", "16", "17", "19", "18", "20", "21", "23", "22", Arrays.asList(arrays)));
-        karnaughModels.add(new KarnaughModel("A'BCD", "A'BCD'", "28", "29", "31", "30", "24", "25", "27", "26", Arrays.asList(arrays)));
-        karnaughModels.add(new KarnaughModel("AB'C'D'", "AB'C'D", "32", "33", "35", "34", "36", "37", "39", "38", Arrays.asList(arrays)));
-        karnaughModels.add(new KarnaughModel("AB'CD", "AB'CD'", "44", "45", "47", "46", "40", "41", "43", "42", Arrays.asList(arrays)));
-        karnaughModels.add(new KarnaughModel("ABC'D'", "ABC'D", "48", "49", "51", "50", "52", "53", "55", "54", Arrays.asList(arrays)));
-        karnaughModels.add(new KarnaughModel("ABCD", "ABCD'", "60", "61", "63", "62", "56", "57", "59", "58", Arrays.asList(arrays)));
+        karnaughModels.add(new KarnaughModel("A'B'CD", "A'B'CD''", "12", "13", "15", "14", "8", "9", "11", "10", Arrays.asList(array1)));
+        karnaughModels.add(new KarnaughModel("A'BC'D''", "A'BC'D", "16", "17", "19", "18", "20", "21", "23", "22", Arrays.asList(array2)));
+        karnaughModels.add(new KarnaughModel("A'BCD", "A'BCD'", "28", "29", "31", "30", "24", "25", "27", "26", Arrays.asList(array3)));
+        karnaughModels.add(new KarnaughModel("AB'C'D'", "AB'C'D", "32", "33", "35", "34", "36", "37", "39", "38", Arrays.asList(array4)));
+        karnaughModels.add(new KarnaughModel("AB'CD", "AB'CD'", "44", "45", "47", "46", "40", "41", "43", "42", Arrays.asList(array5)));
+        karnaughModels.add(new KarnaughModel("ABC'D'", "ABC'D", "48", "49", "51", "50", "52", "53", "55", "54", Arrays.asList(array6)));
+        karnaughModels.add(new KarnaughModel("ABCD", "ABCD'", "60", "61", "63", "62", "56", "57", "59", "58", Arrays.asList(array7)));
+
 
         recyclerView.setAdapter(karnaughAdapter);
     }

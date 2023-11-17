@@ -53,38 +53,70 @@ public class KarnaughAdapter extends RecyclerView.Adapter<KarnaughAdapter.Stylis
     holder.txtdisplay7.setText(karnaughModels.get(position).getTxtdisplay7());
 
 
-        holder.btn0.setOnClickListener(view -> listener((Button)view, holder.getAdapterPosition(), 0));
-        holder.btn1.setOnClickListener(view -> listener((Button)view , holder.getAdapterPosition(), 1));
-        holder.btn2.setOnClickListener(view -> listener((Button)view , holder.getAdapterPosition(),2));
-        holder.btn3.setOnClickListener(view -> listener((Button)view, holder.getAdapterPosition(),3));
-        holder.btn4.setOnClickListener(view -> listener((Button)view, holder.getAdapterPosition(),4));
-        holder.btn5.setOnClickListener(view -> listener((Button)view, holder.getAdapterPosition(),5));
-        holder.btn6.setOnClickListener(view -> listener((Button)view, holder.getAdapterPosition(),6));
-        holder.btn7.setOnClickListener(view -> listener((Button)view, holder.getAdapterPosition(),7));
-
+        holder.btn0.setOnClickListener(view -> {
+            int currentPos = holder.getAdapterPosition();
+            listener((Button)view, currentPos, 0);
+        });
+        holder.btn1.setOnClickListener(view -> {
+            int currentPos = holder.getAdapterPosition();
+            listener((Button)view, currentPos, 1);
+        });
+        holder.btn2.setOnClickListener(view -> {
+            int currentPos = holder.getAdapterPosition();
+            listener((Button)view, currentPos, 2);
+        });
+        holder.btn3.setOnClickListener(view -> {
+            int currentPos = holder.getAdapterPosition();
+            listener((Button)view, currentPos, 3);
+        });
+        holder.btn4.setOnClickListener(view -> {
+            int currentPos = holder.getAdapterPosition();
+            listener((Button)view, currentPos, 4);
+        });
+        holder.btn5.setOnClickListener(view -> {
+            int currentPos = holder.getAdapterPosition();
+            listener((Button)view, currentPos, 5);
+        });
+        holder.btn6.setOnClickListener(view -> {
+            int currentPos = holder.getAdapterPosition();
+            listener((Button)view, currentPos, 6);
+        });
+        holder.btn7.setOnClickListener(view -> {
+            int currentPos = holder.getAdapterPosition();
+            listener((Button)view, currentPos, 7);
+        });
 
     }
 
-    private void listener(Button button, int position, int arr ) {
+    private void listener(Button button, int position, int arr) {
         String buttonText = button.getText().toString();
+        KarnaughModel model = karnaughModels.get(position);
+        List<String> list = model.getList();
+
         switch (buttonText) {
             case "0":
-                karnaughModels.get(position).getList().set(arr, "1");
+                list.set(arr, "1");
                 button.setText("1");
                 break;
             case "1":
+                list.set(arr, "x");
                 button.setText("x");
-                karnaughModels.get(position).getList().set(arr, "x");
                 break;
             case "x":
+                list.set(arr, "0");
                 button.setText("0");
-                karnaughModels.get(position).getList().set(arr, "0");
                 break;
             default:
                 // Handle unexpected button text if needed
                 break;
         }
+
+        // Update the model with the modified list
+        model.setList(list);
+        // Notify the adapter if needed
+        // adapter.notifyItemChanged(position);
     }
+
 
     @Override
     public int getItemCount() {

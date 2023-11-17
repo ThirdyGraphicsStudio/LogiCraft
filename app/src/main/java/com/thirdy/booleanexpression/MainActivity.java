@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
                 } else if (itemId == R.id.nav_feedback) {
                     // Handle the profile case
-                    selectedFragment = new Help();
+                    selectedFragment = new History();
 
 
                 } else {
