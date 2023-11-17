@@ -15,6 +15,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
+import com.thirdy.booleanexpression.DatabaseHelper.HistoryTaskTable;
 import com.thirdy.booleanexpression.R;
 
 import java.util.ArrayList;
@@ -166,11 +167,17 @@ public class MainTruthTable extends AppCompatActivity {
 
 
         btnGenerate.setOnClickListener(v -> {
+
+
+
             // Create an array to hold the state of the "F" column
             int[] fColumnValues = new int[rowCount];
             for (int i = 0; i < rowCount; i++) {
                 fColumnValues[i] = rows[i][variableCount + 1]; // Assuming this is where the "F" column is
             }
+
+            HistoryTaskTable historyTaskTable = new HistoryTaskTable(this);
+            historyTaskTable.insertData("Truth Table Input", Arrays.toString(fColumnValues), variableCount);
 
             // Create the intent to start the new activity
             Intent intent = new Intent(MainTruthTable.this, FormulaTruthTable.class);

@@ -47,13 +47,11 @@ public class MainActivity extends AppCompatActivity {
                 if (itemId == R.id.nav_home) {
                     selectedFragment = new Homepage();
                 } else if (itemId == R.id.nav_history) {
-//                    selectedFragment = new History();
+                    selectedFragment = new History();
 
-                    System.exit(0);
                 } else if (itemId == R.id.nav_feedback) {
                     // Handle the profile case
-//                    selectedFragment = new Help();
-                    System.exit(0);
+                    selectedFragment = new Help();
 
 
                 } else {
