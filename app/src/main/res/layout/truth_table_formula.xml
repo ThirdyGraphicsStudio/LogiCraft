@@ -212,24 +212,24 @@
                 <!--Group 1-->
 
                 <TextView
-                    android:visibility="gone"
+                    android:id="@+id/txtSolution"
                     android:layout_marginTop="20dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Group 1:"
+                    android:text=""
                     android:textSize="12sp"
                     android:textColor="@color/black"
                     android:fontFamily="@font/poppinsregular"
                     />
 
                 <TextView
-                    android:visibility="gone"
+                    android:id="@+id/txtAnswer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Positions = {4,5,7,6}"
-                    android:textSize="12sp"
+                    android:text=""
+                    android:textSize="16sp"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/poppinsregular"
+                    android:fontFamily="@font/poppinssemibold"
                     />
                 <TextView
                     android:layout_width="wrap_content"

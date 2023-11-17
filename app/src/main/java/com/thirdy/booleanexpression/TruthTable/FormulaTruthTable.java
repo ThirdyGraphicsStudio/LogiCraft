@@ -21,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
+import com.thirdy.booleanexpression.Algorithm.Solver;
+import com.thirdy.booleanexpression.Algorithm.Term;
 import com.thirdy.booleanexpression.KarnaughMap.FormulaKarnaughMap;
 import com.thirdy.booleanexpression.R;
 
@@ -29,6 +31,7 @@ import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -43,6 +46,7 @@ public class FormulaTruthTable extends AppCompatActivity {
     private TextView txtResult;
     private ProgressBar progressBar;
     private ImageView imgPdf;
+    private TextView txtSolution, txtAnswer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +57,8 @@ public class FormulaTruthTable extends AppCompatActivity {
         variableCount = getIntent().getIntExtra("variableCount", 0);
         fColumnValues = getIntent().getIntArrayExtra("fColumnValues");
         txtResult = findViewById(R.id.txtResult);
-
+        txtSolution = findViewById(R.id.txtSolution);
+        txtAnswer = findViewById(R.id.txtAnswer);
         imgPdf = findViewById(R.id.imgPdf);
 
 
@@ -70,12 +75,14 @@ public class FormulaTruthTable extends AppCompatActivity {
             minters[i] = String.valueOf(fColumnValues[i]);
         }
 
+        Log.d("minters", "Minters" +  Arrays.toString(minters));
+        Log.d("minters",  "column values" + Arrays.toString(fColumnValues));
+
         //generate table
         if (fColumnValues != null) {
             generateTruthTablePreview(variableCount, fColumnValues);
         }
 
-        generateKmapTable(variableCount, "1");
         dropdownForGroup();
         dropdownForExport();
 
@@ -86,9 +93,8 @@ public class FormulaTruthTable extends AppCompatActivity {
                 finish();
             }
         });
+
     }
-
-
 
     private void generateTruthTablePreview(int variableCount, int[] fColumnValues) {
         TableLayout tableLayout = findViewById(R.id.tableLayout); // Make sure you have a TableLayout in your XML with this ID
@@ -330,16 +336,49 @@ public class FormulaTruthTable extends AppCompatActivity {
                         .collect(Collectors.joining(", "));
 
                 if(selectedItem.equals("SOP")) {
-                    txtResult.setText("");
                     generateKmapTable(variableCount, "1");
-                    sendRequest("I need to solve a " + variableCount + "-variable K-Map with the following minterms:" + fColumnValuesString + " . Can you group the minterms, simplify the expression, and give me the final SOP expression?");
-                    progressBar.setVisibility(View.VISIBLE);
+
+                    String minterms = "";
+                    for (int i = 0; i < fColumnValues.length; i++) {
+                        if (fColumnValues[i] == 1) {
+                            minterms += i + " ";
+                        }
+                    }
+
+                    // Optional: Remove the trailing space
+                    if (!minterms.isEmpty()) {
+                        minterms = minterms.substring(0, minterms.length() - 1);
+                    }
+
+                    // Now you can use the minterms string
+                    answer(minterms, "");
+
+                    txtResult.setText("");
+                    answer(minterms, "");
+
+
+
                 }else {
                     txtResult.setText("");
                     generateKmapTable(variableCount, "0");
-                    progressBar.setVisibility(View.VISIBLE);
-                    sendRequest("I need to solve a " + variableCount + "-variable K-Map with the following minterms:" + fColumnValuesString + " . Can you group the minterms, simplify the expression, and give me the final POS expression?");
 
+                    String minterms = "";
+                    for (int i = 0; i < fColumnValues.length; i++) {
+                        if (fColumnValues[i] == 0) {
+                            minterms += i + " ";
+                        }
+                    }
+
+                    // Optional: Remove the trailing space
+                    if (!minterms.isEmpty()) {
+                        minterms = minterms.substring(0, minterms.length() - 1);
+                    }
+
+                    // Now you can use the minterms string
+                    answer(minterms, "");
+
+                    txtResult.setText("");
+                    answer(minterms, "");
 
                 }
             }
@@ -460,6 +499,63 @@ public class FormulaTruthTable extends AppCompatActivity {
             }
         }).start();
     }
+
+
+
+    public void answer(String minterms, String dontCares) {
+
+
+            Solver s = new Solver(minterms, dontCares);
+
+            s.solve();
+            s.printResults();
+
+            ArrayList<ArrayList<Term>[]> s1 = s.step1;
+            StringBuilder builder = new StringBuilder();
+
+            // to print 1st step
+            for (int i = 0; i < s1.size(); i++) {
+                builder.append("Step ").append(i + 1).append("\n");
+                for (int j = 0; j < s1.get(i).length; j++) {
+                    for (int k = 0; k < s1.get(i)[j].size(); k++) {
+                        String stepString = s1.get(i)[j].get(k).getString();
+                        builder.append(stepString);
+                        if (s.taken_step1.size() > i && s.taken_step1.get(i).contains(stepString)) {
+                            builder.append(" taken");
+                        }
+                        builder.append("\n");
+                    }
+                    builder.append("---------------------------\n");
+                }
+                builder.append("\n");
+            }
+
+            // Printing step2
+            for (int k = 0; k < s.step2.size(); k++) {
+                String[][] step2 = s.step2.get(k);
+                for (int i = 0; i < step2.length; i++) {
+                    for (int j = 0; j < step2[0].length; j++) {
+                        builder.append(step2[i][j]).append("  ");
+                    }
+                    builder.append("\n");
+                }
+                builder.append("\n");
+            }
+
+            // Printing petrickKey
+            for (int i = 0; i < s.petrickKey.size(); i++) {
+                builder.append(s.petrickKey.get(i)).append("\n");
+            }
+
+            // Printing step3
+            for (int i = 0; i < s.step3.size(); i++) {
+                builder.append(s.step3.get(i)).append("\n");
+            }
+
+            Log.d("StepLog", builder.toString());
+            txtSolution.setText(builder.toString());
+            txtAnswer.setText(s.printResults());
+        }
 
 
 }

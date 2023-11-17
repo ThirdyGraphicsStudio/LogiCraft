@@ -37,10 +37,6 @@ public class MainTruthTable extends AppCompatActivity {
         //generate table
         generateTruthTable(3);
 
-
-
-
-
         MaterialButton dropdownButton = findViewById(R.id.dropdownButton);
 
         // In your activity

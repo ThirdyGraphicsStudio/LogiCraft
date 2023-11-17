@@ -378,8 +378,6 @@ public class MainKarnaughMap extends AppCompatActivity implements MyInterface {
         btn3.setOnClickListener(v -> {
             listener(btn3, 3);
         });
-
-
     }
 
 
