@@ -436,7 +436,6 @@ public class FormulaTruthTable extends AppCompatActivity {
 
     public void answer(String minterms, String dontCares) {
 
-
             Solver s = new Solver(minterms, dontCares);
 
             s.solve();

@@ -102,8 +102,8 @@ public class MainKarnaughMap extends AppCompatActivity implements MyInterface {
             fColumnValues[3] = karnaughModels.get(0).getList().get(2);
             fColumnValues[4] = karnaughModels.get(0).getList().get(4);
             fColumnValues[5] = karnaughModels.get(0).getList().get(5);
-            fColumnValues[6] = karnaughModels.get(0).getList().get(6);
-            fColumnValues[7] = karnaughModels.get(0).getList().get(7);
+            fColumnValues[6] = karnaughModels.get(0).getList().get(7);
+            fColumnValues[7] = karnaughModels.get(0).getList().get(6);
         }else if (variables == 4) {
             fColumnValues = new String[16];
             fColumnValues[0] = karnaughModels.get(0).getList().get(0);
@@ -112,8 +112,8 @@ public class MainKarnaughMap extends AppCompatActivity implements MyInterface {
             fColumnValues[3] = karnaughModels.get(0).getList().get(2);
             fColumnValues[4] = karnaughModels.get(0).getList().get(4);
             fColumnValues[5] = karnaughModels.get(0).getList().get(5);
-            fColumnValues[6] = karnaughModels.get(0).getList().get(6);
-            fColumnValues[7] = karnaughModels.get(0).getList().get(7);
+            fColumnValues[6] = karnaughModels.get(0).getList().get(7);
+            fColumnValues[7] = karnaughModels.get(0).getList().get(6);
             fColumnValues[8] = karnaughModels.get(1).getList().get(4);
             fColumnValues[9] = karnaughModels.get(1).getList().get(5);
             fColumnValues[10] = karnaughModels.get(1).getList().get(7);
@@ -130,8 +130,8 @@ public class MainKarnaughMap extends AppCompatActivity implements MyInterface {
             fColumnValues[3] = karnaughModels.get(0).getList().get(2);
             fColumnValues[4] = karnaughModels.get(0).getList().get(4);
             fColumnValues[5] = karnaughModels.get(0).getList().get(5);
-            fColumnValues[6] = karnaughModels.get(0).getList().get(6);
-            fColumnValues[7] = karnaughModels.get(0).getList().get(7);
+            fColumnValues[6] = karnaughModels.get(0).getList().get(7);
+            fColumnValues[7] = karnaughModels.get(0).getList().get(6);
             fColumnValues[8] = karnaughModels.get(1).getList().get(4);
             fColumnValues[9] = karnaughModels.get(1).getList().get(5);
             fColumnValues[10] = karnaughModels.get(1).getList().get(7);

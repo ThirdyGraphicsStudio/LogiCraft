@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:fontFamily="@font/poppinsbold"
+        android:text="Step 1: Select Number of Variables"
+        android:textColor="@color/black"
+        />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="11sp"
+        android:fontFamily="@font/poppinsregular"
+        android:text="@string/truth_table_step1"
+        android:textColor="@color/black"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/dropdownButton"
+        android:layout_marginVertical="20dp"
+        android:padding="20dp"
+
+        style="@style/TextAppearance.AppCompat.Widget.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/dropdown"
+        app:iconGravity="end"
+        app:iconTint="@color/primary"
+        android:fontFamily="@font/poppinssemibold"
+        android:layout_alignParentRight="true"
+        android:layout_marginHorizontal="20dp"
+        android:stateListAnimator="@null"
+        android:text="3 Variables"
+        android:textAlignment="textStart"
+        android:textAllCaps="false"
+        android:textColor="@color/primary"
+        android:textSize="12sp"
+        app:backgroundTint="@android:color/transparent"
+        app:cornerRadius="12dp"
+        app:rippleColor="@color/primary"
+        app:strokeColor="@color/primary"
+        app:strokeWidth="1dp" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:fontFamily="@font/poppinsbold"
+        android:text="Step 2: Understand the Table"
+        android:textColor="@color/black"
+        />
+
+    <TextView
+        android:id="@+id/karnaughStep2"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:fontFamily="@font/poppinsregular"
+        android:text="@string/karnaugh_step2"
+        android:textColor="@color/black"
+        />
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:src="@drawable/karnaugh_table2"
+        android:layout_marginTop="20dp"
+        android:paddingHorizontal="20dp"
+        android:layout_marginBottom="20dp"
+        android:scaleType="fitXY"
+        />
+
+    <TextView
+
+        android:id="@+id/karnaughStep2v1"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:fontFamily="@font/poppinsregular"
+        android:text="@string/karnaugh_step2"
+        android:textColor="@color/black"
+        />
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:src="@drawable/karnaugh_table3"
+        android:layout_marginTop="20dp"
+        android:paddingHorizontal="20dp"
+        android:layout_marginBottom="20dp"
+        android:scaleType="fitXY"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/poppinsbold"
+        android:text="Step 3: Generate Karnaugh Map"
+        android:textColor="@color/black"
+        />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/poppinsregular"
+        android:text="After inputting your values, click the 'Generate' button below the table to generate the complete Truth Table for your logical expression."
+        android:textColor="@color/black"
+        />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/poppinsbold"
+        android:text="Step 4: Choose Grouping Type"
+        android:textColor="@color/black"
+        />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/poppinsregular"
+        android:text="In the generated result, under the grouping section, choose between Sum of Products (SOP) or Product of Sums (POS) for your K-map grouping."
+        android:textColor="@color/black"
+        />
+
+
+    <ImageView
+        android:layout_width="170dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:src="@drawable/grouping"
+        android:layout_marginTop="20dp"
+        android:paddingHorizontal="20dp"
+        android:layout_marginBottom="20dp"
+        android:scaleType="fitXY"
+        />
+
+
+    <TextView
+
+        android:id="@+id/karnaughStep4"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:fontFamily="@font/poppinsregular"
+        android:text="@string/karnaugh_step4"
+        android:textColor="@color/black"
+        />
+
+</LinearLayout>
