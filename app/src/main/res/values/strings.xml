@@ -54,6 +54,100 @@
     <string name="grouping_description">Group together the 1\'s in the K-map to simplify the expression. </string>
     <string name="logic_diagram_description">We can generate a logic diagram for the simplified expression. The logic diagram represents the simplified expression using logic gates, which show how the input variables are combined to produce the output variable. \n\nBelow is the logic diagram for the simplified expression:</string>
 
+    <string name="truth_table_step1">Begin by selecting the number of variables for your logical expression. You can choose from 2 to 6 variables. \n \n
+              \t\t1. Click on the "Variables" dropdown menu. \n
+              \t\t2. Choose the desired number of variables</string>
+
+
+
+    <string name="truth_table_step2">
+<![CDATA[
+<b>Once you have selected the number of variables, a Truth Table input will be generated. Here is a breakdown of the table for 3-variables:</b>
+<br><br>
+
+<b>Columns:</b>
+<ul>
+  <li><b> A, B, C:</b> Represent the input variables.</li>
+  <li><b> m:</b> Represents the count, starting from 0 to 2<sup>n</sup> - 1, where n is the number of variables.</li>
+  <li><b> F:</b> Represents the output of the logical expression. Toggle between 0 and 1 for your desired input.</li>
+</ul>
+
+<b>Table Size Information:</b>
+<ul>
+  <li> For n variables, the Truth Table will have 2<sup>n</sup> rows.</li>
+  <li> 2 variables: = 4 rows</li>
+  <li> 3 variables: = 8 rows</li>
+  <li> 4 variables: = 16 rows</li>
+  <li> 5 variables: = 32 rows</li>
+  <li> 6 variables: = 64 rows</li>
+</ul>
+
+<b>Lets say you selected 3 variables: A, B, and C. Your Truth Table might look like this:</b>
+
+
+]]>
+</string>
+
+
+    <string name="karnaugh_step2">
+<![CDATA[
+<p><b>Once you have selected the number of variables, the Karnaugh Map will be generated. Here is a breakdown of the K-map:</b></p>
+
+<p><b>Karnaugh Map Layout Information:</b></p>
+<ul>
+  <li> For n variables, the K-map layout is organized as follows:</li>
+  <li> 2 variables: 2x2 grid = 4</li>
+  <li> 3 variables: 2x4 grid = 8</li>
+  <li> 4 variables: 4x4 grid = 16</li>
+  <li> 5 variables: 4x8 grid = 32</li>
+  <li> 6 variables: 8x8 grid = 64</li>
+</ul>
+
+<p><b>Cell Values:</b></p>
+<ul>
+  <li>0: The default value, indicating the cell is set to 0.</li>
+  <li>1: Toggle to set the cell value to 1.</li>
+  <li>x (Dont Care): Use this option for cells that represent Dont Care conditions in your logical expression.</li>
+</ul>
+
+
+
+]]>
+</string>
+
+
+    <string name="karnaugh_step2v1">
+<![CDATA[
+
+
+<p><b>Cell Labels:</b></p>
+<ul>
+  <li> <b> Small Green Box with a Number: </b> This represents the label of the corresponding input of that cell.</li>
+</ul>
+
+
+
+]]>
+</string>
+
+
+    <string name="karnaugh_step4">
+<![CDATA[
+
+
+<p><b>Grouping Types:</b></p>
+<ul>
+  <li> <b> Sum of Products (SOP): </b> .</li>
+  <li> Combine adjacent cells with 1s to form groups, and create a sum of these product terms.</b> .</li>
+    <li> <b> Product of Sums (POS):</b> .</li>
+  <li> Combine adjacent cells with 0s to form groups, and create a product of these sum terms..</li>
+</ul>
+
+
+
+]]>
+</string>
+
 
     <string-array name="dropdown_items">
         <item>SOP</item>

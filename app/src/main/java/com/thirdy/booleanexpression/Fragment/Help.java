@@ -5,10 +5,12 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +30,7 @@ public class Help extends Fragment {
 
         //truth table
         final CardView headerText = view.findViewById(R.id.header1);
-        final TextView contentText = view.findViewById(R.id.content_text);
+        final LinearLayout contentText = view.findViewById(R.id.content_text);
         final ImageView dropdownIcon = view.findViewById(R.id.dropdown_icon);
 
         headerText.setOnClickListener(new View.OnClickListener() {
@@ -48,7 +50,7 @@ public class Help extends Fragment {
         //karnaugh map
 
         final CardView headerText2 = view.findViewById(R.id.header2);
-        final TextView contentText2 = view.findViewById(R.id.content_text2);
+        final LinearLayout contentText2 = view.findViewById(R.id.content_text2);
         final ImageView dropdownIcon2 = view.findViewById(R.id.dropdown_icon2);
 
         headerText2.setOnClickListener(new View.OnClickListener() {
@@ -98,8 +100,18 @@ public class Help extends Fragment {
 
 
 
+        TextView textView = view.findViewById(R.id.truth_table_step2);
+        textView.setText(Html.fromHtml(getString(R.string.truth_table_step2), Html.FROM_HTML_MODE_LEGACY));
 
 
+        TextView karnaughStep2 = view.findViewById(R.id.karnaughStep2);
+        karnaughStep2.setText(Html.fromHtml(getString(R.string.karnaugh_step2), Html.FROM_HTML_MODE_LEGACY));
+
+        TextView karnaughStep2v1 = view.findViewById(R.id.karnaughStep2v1);
+        karnaughStep2v1.setText(Html.fromHtml(getString(R.string.karnaugh_step2v1), Html.FROM_HTML_MODE_LEGACY));
+
+        TextView karnaughStep4 = view.findViewById(R.id.karnaughStep4);
+        karnaughStep4.setText(Html.fromHtml(getString(R.string.karnaugh_step4), Html.FROM_HTML_MODE_LEGACY));
 
         return  view;
 

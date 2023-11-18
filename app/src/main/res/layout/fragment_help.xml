@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/white"
     android:padding="20dp"
     tools:context=".Fragment.Help">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
 
 
     <TextView
@@ -125,13 +130,16 @@
         <!-- Header with dropdown icon and text -->
 
         <!-- Content that will be shown/hidden -->
-        <TextView
+        <LinearLayout
             android:id="@+id/content_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Content goes here"
-            android:padding="8dp"
-            android:visibility="gone" />
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <include layout="@layout/help_truth_table"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -196,13 +204,17 @@
         <!-- Header with dropdown icon and text -->
 
         <!-- Content that will be shown/hidden -->
-        <TextView
+        <LinearLayout
             android:id="@+id/content_text2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Content goes here"
+            android:orientation="vertical"
             android:padding="8dp"
-            android:visibility="gone" />
+            android:visibility="gone">
+
+            <include layout="@layout/help_karnaugh_table"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -278,4 +290,8 @@
     </LinearLayout>
 
 
-</LinearLayout>
+
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>
