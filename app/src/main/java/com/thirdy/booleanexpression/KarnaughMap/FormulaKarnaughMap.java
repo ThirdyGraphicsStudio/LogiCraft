@@ -56,7 +56,7 @@ public class FormulaKarnaughMap extends AppCompatActivity {
     private TextView txtResult;
     private  ImageView imgPdf;
     private TextView txtSolution;
-    private TextView txtAnswer;
+    private TextView txtAnswer, txtInput;
     private NestedScrollView nestedScrollView;
     private static final int MY_PERMISSIONS_REQUEST_CODE = 123;
     String path,imageUri,file_name = "Download";
@@ -75,7 +75,7 @@ public class FormulaKarnaughMap extends AppCompatActivity {
         txtAnswer = findViewById(R.id.txtAnswer);
         nestedScrollView = findViewById(R.id.nestedScrollView);
         linearLayout = findViewById(R.id.ll_output);
-
+        txtInput = findViewById(R.id.txtInput);
         imgPdf.setOnClickListener(view -> {
             savedPdf();
         });
@@ -109,6 +109,32 @@ public class FormulaKarnaughMap extends AppCompatActivity {
         }
 
         generateKmapTable(variableCount, "1");
+
+
+
+        ArrayList<Integer> indexes = new ArrayList<>();
+
+        // Iterate through fColumnValues
+        for (int i = 0; i < fColumnValues.length; i++) {
+            if (Integer.parseInt(fColumnValues[i]) == 1) {
+                indexes.add(i); // Add index to the list if value is 1
+            }
+        }
+
+        // Convert the list of indexes to a string representation with commas
+        StringBuilder builder = new StringBuilder();
+        for (int index : indexes) {
+            builder.append(index).append(", ");
+        }
+
+        // Remove the last comma
+        if (builder.length() > 0) {
+            builder.setLength(builder.length() - 1);
+        }
+
+        String minterms = builder.toString(); // Contains "1,3,4,5"
+
+        txtInput.setText("Input = ∑ ( " + minterms + " )");
 
 
         //generate table
@@ -787,6 +813,49 @@ public class FormulaKarnaughMap extends AppCompatActivity {
         s.solve();
         s.printResults();
 
+        ArrayList<String[][]> step2 = s.step2;
+        StringBuilder builder = new StringBuilder();
+
+// Iterate over each 2D array
+        for (int arrayIndex = 0; arrayIndex < step2.size(); arrayIndex++) {
+            String[][] array = step2.get(arrayIndex);
+            boolean hasNumericHeader = false;
+            StringBuilder headerBuilder = new StringBuilder();
+
+            // Check and build the numeric headers (first row) of each 2D array
+            for (int i = 0; i < array[0].length; i++) {
+                try {
+                    // Attempt to parse the header as an integer
+                    Integer.parseInt(array[0][i]);
+                    headerBuilder.append(array[0][i]).append(" ");
+                    hasNumericHeader = true;
+                } catch (NumberFormatException e) {
+                    // Not a numeric header, ignore
+                }
+            }
+
+            // Only append the group if there are numeric headers
+            if (hasNumericHeader) {
+                builder.append("Group ").append(arrayIndex + 1).append(":\n");
+                builder.append(headerBuilder.toString()).append("\n\n");
+            }
+        }
+
+        Log.d("StepLog", builder.toString());
+
+
+        txtSolution.setText(builder.toString());
+        txtAnswer.setText(s.printResults());
+    }
+
+    public void answer2(String minterms, String dontCares) {
+
+
+        Solver s = new Solver(minterms, dontCares);
+
+        s.solve();
+        s.printResults();
+
         ArrayList<ArrayList<Term>[]> s1 = s.step1;
         StringBuilder builder = new StringBuilder();
 
@@ -830,10 +899,9 @@ public class FormulaKarnaughMap extends AppCompatActivity {
         }
 
         Log.d("StepLog", builder.toString());
-        //txtSolution.setText(builder.toString());
-        txtAnswer.setText(s.printResults());
+//        txtSolution.setText(builder.toString());
+//        txtAnswer.setText(s.printResults());
     }
-
 
 
 

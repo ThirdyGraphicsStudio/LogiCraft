@@ -64,7 +64,7 @@ public class FormulaTruthTable extends AppCompatActivity {
     private TextView txtResult;
     private ProgressBar progressBar;
     private ImageView imgPdf;
-    private TextView txtSolution, txtAnswer;
+    private TextView txtSolution, txtAnswer, txtInput;
     private NestedScrollView nestedScrollView;
     private static final int MY_PERMISSIONS_REQUEST_CODE = 123;
     String path,imageUri,file_name = "Download";
@@ -85,6 +85,8 @@ public class FormulaTruthTable extends AppCompatActivity {
         imgPdf = findViewById(R.id.imgPdf);
         nestedScrollView = findViewById(R.id.nestedScrollView);
         linearLayout = findViewById(R.id.ll_output);
+        txtInput = findViewById(R.id.txtInput);
+
 
         imgPdf.setOnClickListener(view -> {
             savedPdf();
@@ -98,6 +100,31 @@ public class FormulaTruthTable extends AppCompatActivity {
         for (int i = 0; i < fColumnValues.length; i++) {
             minters[i] = String.valueOf(fColumnValues[i]);
         }
+
+
+        ArrayList<Integer> indexes = new ArrayList<>();
+
+        // Iterate through fColumnValues
+        for (int i = 0; i < fColumnValues.length; i++) {
+            if (fColumnValues[i] == 1) {
+                indexes.add(i); // Add index to the list if value is 1
+            }
+        }
+
+        // Convert the list of indexes to a string representation with commas
+        StringBuilder builder = new StringBuilder();
+        for (int index : indexes) {
+            builder.append(index).append(", ");
+        }
+
+        // Remove the last comma
+        if (builder.length() > 0) {
+            builder.setLength(builder.length() - 1);
+        }
+
+        String minterms = builder.toString(); // Contains "1,3,4,5"
+
+        txtInput.setText("Input = ∑ ( " + minterms + " )");
 
         Log.d("minters", "Minters" +  Arrays.toString(minters));
         Log.d("minters",  "column values" + Arrays.toString(fColumnValues));
@@ -572,50 +599,37 @@ public class FormulaTruthTable extends AppCompatActivity {
             s.solve();
             s.printResults();
 
-            ArrayList<ArrayList<Term>[]> s1 = s.step1;
-            StringBuilder builder = new StringBuilder();
+        ArrayList<String[][]> step2 = s.step2;
+        StringBuilder builder = new StringBuilder();
 
-            // to print 1st step
-            for (int i = 0; i < s1.size(); i++) {
-                builder.append("Step ").append(i + 1).append("\n");
-                for (int j = 0; j < s1.get(i).length; j++) {
-                    for (int k = 0; k < s1.get(i)[j].size(); k++) {
-                        String stepString = s1.get(i)[j].get(k).getString();
-                        builder.append(stepString);
-                        if (s.taken_step1.size() > i && s.taken_step1.get(i).contains(stepString)) {
-                            builder.append(" taken");
-                        }
-                        builder.append("\n");
-                    }
-                    builder.append("---------------------------\n");
+// Iterate over each 2D array
+        for (int arrayIndex = 0; arrayIndex < step2.size(); arrayIndex++) {
+            String[][] array = step2.get(arrayIndex);
+            boolean hasNumericHeader = false;
+            StringBuilder headerBuilder = new StringBuilder();
+
+            // Check and build the numeric headers (first row) of each 2D array
+            for (int i = 0; i < array[0].length; i++) {
+                try {
+                    // Attempt to parse the header as an integer
+                    Integer.parseInt(array[0][i]);
+                    headerBuilder.append(array[0][i]).append(" ");
+                    hasNumericHeader = true;
+                } catch (NumberFormatException e) {
+                    // Not a numeric header, ignore
                 }
-                builder.append("\n");
             }
 
-            // Printing step2
-            for (int k = 0; k < s.step2.size(); k++) {
-                String[][] step2 = s.step2.get(k);
-                for (int i = 0; i < step2.length; i++) {
-                    for (int j = 0; j < step2[0].length; j++) {
-                        builder.append(step2[i][j]).append("  ");
-                    }
-                    builder.append("\n");
-                }
-                builder.append("\n");
+            // Only append the group if there are numeric headers
+            if (hasNumericHeader) {
+                builder.append("Group ").append(arrayIndex + 1).append(":\n");
+                builder.append(headerBuilder.toString()).append("\n\n");
             }
+        }
 
-            // Printing petrickKey
-            for (int i = 0; i < s.petrickKey.size(); i++) {
-                builder.append(s.petrickKey.get(i)).append("\n");
-            }
+        Log.d("StepLog", builder.toString());
 
-            // Printing step3
-            for (int i = 0; i < s.step3.size(); i++) {
-                builder.append(s.step3.get(i)).append("\n");
-            }
-
-            Log.d("StepLog", builder.toString());
-            //txtSolution.setText(builder.toString());
+        txtSolution.setText(builder.toString());
             txtAnswer.setText(s.printResults());
         }
 
