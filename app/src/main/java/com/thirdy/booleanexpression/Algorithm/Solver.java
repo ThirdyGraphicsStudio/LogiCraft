@@ -550,14 +550,14 @@ public class Solver {
     public String  printResults() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < solution.length; i++) {
-            builder.append("Solution #").append(i + 1).append(":\n");
+            builder.append("Solution #").append(i + 1).append(":\n\n Binary Form: \n ");
             for (int j = 0; j < solution[i].size(); j++) {
                 builder.append(solution[i].get(j));
                 if (j != solution[i].size() - 1) {
                     builder.append(" + ");
                 }
             }
-            builder.append("\n(");
+            builder.append("\n\nVariable Form \n (");
             for (int j = 0; j < solution[i].size(); j++) {
                 builder.append(toSymbolic(solution[i].get(j)));
                 if (j != solution[i].size() - 1) {

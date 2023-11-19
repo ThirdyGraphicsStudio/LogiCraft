@@ -3,25 +3,50 @@ package com.thirdy.booleanexpression.BooleanExpression;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
+import com.thirdy.booleanexpression.DatabaseHelper.HistoryTaskTable;
 import com.thirdy.booleanexpression.R;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Scanner;
 
 public class MainBooleanExpression extends AppCompatActivity {
     private EditText displayEditText;
+    private ImageView btnHelp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.boolean_expression_main);
+
+        btnHelp = findViewById(R.id.btnHelp);
+
+
+        btnHelp();
 
         displayEditText = findViewById(R.id.displayEditText);
         CardView btnCurlyDash = findViewById(R.id.btnCurlyDash);
@@ -79,6 +104,10 @@ public class MainBooleanExpression extends AppCompatActivity {
                     Toast.makeText(MainBooleanExpression.this, "Please input a valid boolean expression", Toast.LENGTH_SHORT).show();
                     return;
                 }else{
+
+                    HistoryTaskTable historyTaskTable = new HistoryTaskTable(this);
+                    historyTaskTable.insertData("Boolean Expression Input", input, 2);
+
                     Intent intent = new Intent(MainBooleanExpression.this, FormulaBooleanExpression.class);
                     intent.putExtra("input", input);
                     startActivity(intent);
@@ -224,6 +253,20 @@ public class MainBooleanExpression extends AppCompatActivity {
 
 
 
+    }
+
+    private void btnHelp() {
+        btnHelp.setOnClickListener(v -> {
+            final Dialog dialog = new Dialog(MainBooleanExpression.this);
+            dialog.setContentView(R.layout.pop_up_info);
+
+
+            // Get the Window object of the dialog
+
+
+            // Show the dialog
+            dialog.show();
+        });
     }
 
     private void addToDisplay(String value) {

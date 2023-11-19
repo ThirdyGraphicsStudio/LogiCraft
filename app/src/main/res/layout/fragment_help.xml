@@ -36,7 +36,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Our user manual provides step-by-step instructions, explanations, and illustrations on how to use our application and its features. Get the most out of our application with our easy-to-follow user manual, your go-to guide for all your digital circuit design needs."
+        android:text="Our user manual provides step-by-step instructions, explanations, and illustrations on how to use our application and its features. You can navigate through the manual by clicking on the provided items or use the search bar for quick access to specific information."
         android:fontFamily="@font/poppinsregular"
         android:textColor="@color/highlight"
         android:textSize="14sp"
@@ -106,7 +106,8 @@
                     android:drawablePadding="8dp"
                     android:text="Truth Table"
                     android:textSize="16sp"
-                    android:fontFamily="@font/poppinsmedium"
+                    android:textColor="@color/primary"
+                    android:fontFamily="@font/poppinsregular"
                     />
 
 
@@ -180,7 +181,8 @@
                     android:drawablePadding="8dp"
                     android:text="Karnaugh Map"
                     android:textSize="16sp"
-                    android:fontFamily="@font/poppinsmedium"
+                    android:textColor="@color/primary"
+                    android:fontFamily="@font/poppinsregular"
                     />
 
 
@@ -255,7 +257,8 @@
                     android:drawablePadding="8dp"
                     android:text="Boolean Expression"
                     android:textSize="16sp"
-                    android:fontFamily="@font/poppinsmedium"
+                    android:textColor="@color/primary"
+                    android:fontFamily="@font/poppinsregular"
                     />
 
 

@@ -101,7 +101,6 @@ public class History extends Fragment implements MyInterface {
             Log.d("History", "historyData: " + historyModels.get(i).getMinterms());
         }
 
-        Log.d("History", "0: " + historyModels.get(0).getMinterms());
 
 
 //        historyModels.add(new HistoryModel(1, "Fri Oct 27 01:50:05 GMT 2023", "Truth Table Input"));
@@ -171,6 +170,8 @@ public class History extends Fragment implements MyInterface {
             case "Boolean Expression Input":
                 intent = new Intent(getContext(), FormulaBooleanExpression.class);
                 // Additional logic if needed
+                intent.putExtra("input", selectedHistory.getMinterms());
+
                 break;
             case "Karnaugh Map Input":
                 intent = new Intent(getContext(), FormulaKarnaughMap.class);

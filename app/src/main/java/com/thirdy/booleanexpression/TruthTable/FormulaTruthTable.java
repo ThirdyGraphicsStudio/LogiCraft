@@ -615,7 +615,7 @@ public class FormulaTruthTable extends AppCompatActivity {
             }
 
             Log.d("StepLog", builder.toString());
-            txtSolution.setText(builder.toString());
+            //txtSolution.setText(builder.toString());
             txtAnswer.setText(s.printResults());
         }
 

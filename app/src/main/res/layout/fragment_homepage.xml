@@ -27,7 +27,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hi, Welcome"
+                android:text="Hi, Welcome!"
                 android:textColor="@color/white"
                 android:fontFamily="@font/poppinssemibold"
                 android:textSize="22sp"
@@ -36,10 +36,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="This mobile application helps you design and analyze digital circuits with ease."
+                android:text="Boost your Boolean algebra skills effortlessly with this app! From truth tables to K-maps and logic diagrams, consider it your go-to guide for problem-solving. "
                 android:textColor="@color/white"
                 android:fontFamily="@font/poppinsmedium"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 />
 
             
@@ -96,7 +96,7 @@
                 android:clickable="true"
                 android:focusable="true"
         >
-                
+
                 <ImageView
                     android:layout_width="60dp"
                     android:layout_height="60dp"

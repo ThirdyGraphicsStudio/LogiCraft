@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="Truth Table"
+            android:text="Karnaugh Map"
             android:textSize="16sp"
             android:textColor="@color/black"
             android:fontFamily="@font/poppinsbold"
@@ -467,6 +467,8 @@
                     android:id="@+id/recyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
                     />
 
 
