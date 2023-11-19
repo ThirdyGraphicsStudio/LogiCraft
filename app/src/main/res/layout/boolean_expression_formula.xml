@@ -44,19 +44,30 @@
             android:fontFamily="@font/poppinsbold"
             />
 
+        <ImageView
+            android:id="@+id/imgPdf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/pdf"
+            android:layout_alignParentRight="true"
+            />
+
+
 
     </RelativeLayout>
 
 
 <!--    -->
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="none"
         >
 
         <LinearLayout
+            android:id="@+id/ll_output"
             android:padding="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -84,6 +95,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:text="@string/truth_description"
                 android:textSize="12sp"
                 android:textColor="@color/black"
@@ -117,170 +129,176 @@
 
             </androidx.cardview.widget.CardView>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        >
 
-            <!-- KMAP-->
-             <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    >
+        <!-- KMAP-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="K-Map"
-                        android:textSize="16sp"
-                        android:textColor="@color/primary"
-                        android:fontFamily="@font/poppinssemibold"
-                        />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="K-Map"
+                android:textSize="16sp"
+                android:textColor="@color/primary"
+                android:fontFamily="@font/poppinssemibold"
+                />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/kmap_description"
-                        android:textSize="12sp"
-                        android:textColor="@color/black"
-                        android:fontFamily="@font/poppinsregular"
-                        />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/kmap_description"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppinsregular"
+                />
 
-                    <!--            TODO Table-->
-                    <TableLayout
-                        android:id="@+id/kmapTableLayout"
-                        android:layout_marginVertical="10dp"
-                        android:layout_marginHorizontal="20dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/white"
-                        android:stretchColumns="*">
-
-
-
-                    </TableLayout>
-
-
-
-
-
-                </LinearLayout>
-
-            <!-- GROUPING-->
-            <LinearLayout
+            <!--            TODO Table-->
+            <TableLayout
+                android:id="@+id/kmapTableLayout"
+                android:layout_marginVertical="10dp"
+                android:layout_marginHorizontal="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                >
+                android:background="@color/white"
+                android:stretchColumns="*">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Grouping"
-                    android:textSize="16sp"
-                    android:textColor="@color/primary"
-                    android:fontFamily="@font/poppinssemibold"
-                    />
 
-                <Spinner
-                    android:id="@+id/spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingVertical="10dp"
-                    android:paddingHorizontal="20dp"
-                    android:layout_marginVertical="10dp"
-                    android:background="@drawable/spinner_background"
-                    android:spinnerMode="dropdown"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/grouping_description"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/poppinsregular"
-                    />
+            </TableLayout>
 
-    <!--            Group Table-->
-                <!--            TODO Table-->
-                <TableLayout
-                    android:id="@+id/groupTableLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:stretchColumns="*">
 
-                </TableLayout>
 
-                <!--Group 1-->
 
-                <TextView
-                    android:layout_marginTop="20dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Group 1:"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/poppinsregular"
-                    />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Positions = {4,5,7,6}"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/poppinsregular"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Simplified Expression = A"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/poppinsregular"
-                    />
+        </LinearLayout>
 
-                <!--Group 1-->
+        <!-- GROUPING-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
 
-                <TextView
-                    android:layout_marginTop="20dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Group 2:"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/poppinsregular"
-                    />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Grouping"
+                android:textSize="16sp"
+                android:textColor="@color/primary"
+                android:fontFamily="@font/poppinssemibold"
+                />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Positions = {1, 2}"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/poppinsregular"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Simplified Expression = B'C"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/poppinsregular"
-                    />
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="20dp"
+                android:layout_marginVertical="10dp"
+                android:background="@drawable/spinner_background"
+                android:spinnerMode="dropdown"/>
 
-                <TextView
-                    android:layout_marginTop="20dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="F = A + B’C"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/poppinsbold"
-                    />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/grouping_description"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppinsregular"
+                />
 
-            </LinearLayout>
+            <!--            Group Table-->
+            <!--            TODO Table-->
+            <TableLayout
+                android:id="@+id/groupTableLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:stretchColumns="*">
 
-             <!-- SIMPlify Expression-->
-            <LinearLayout
+            </TableLayout>
+
+            <!--Group 1-->
+
+            <TextView
+                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Group 1:"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppinsregular"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Positions = {4,5,7,6}"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppinsregular"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Simplified Expression = A"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppinsregular"
+                />
+
+            <!--Group 1-->
+
+            <TextView
+                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Group 2:"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppinsregular"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Positions = {1, 2}"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppinsregular"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Simplified Expression = B'C"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppinsregular"
+                />
+
+            <TextView
+                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F = A + B’C"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppinsbold"
+                />
+
+        </LinearLayout>
+
+        <!-- SIMPlify Expression-->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -360,63 +378,75 @@
 
         </LinearLayout>
 
-            <!-- Logic Diagram-->
+        <!-- Logic Diagram-->
 
-            <LinearLayout
-                android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="50dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="50dp"
-                >
+                android:text="Logic Diagram"
+                android:textSize="16sp"
+                android:textColor="@color/primary"
+                android:fontFamily="@font/poppinssemibold"
+                />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Logic Diagram"
-                    android:textSize="16sp"
-                    android:textColor="@color/primary"
-                    android:fontFamily="@font/poppinssemibold"
-                    />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/logic_diagram_description"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppinsregular"
+                />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/logic_diagram_description"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/poppinsregular"
-                    />
+            <ImageView
+                android:layout_width="300dp"
+                android:layout_gravity="center"
+                android:layout_marginVertical="20dp"
+                android:layout_height="200dp"
+                android:src="@drawable/gate"
+                />
 
-                <ImageView
-                    android:layout_width="300dp"
-                    android:layout_gravity="center"
-                    android:layout_marginVertical="20dp"
-                    android:layout_height="200dp"
-                    android:src="@drawable/gate"
-                    />
-
-                <Spinner
-                    android:id="@+id/spinner_export"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingVertical="10dp"
-                    android:layout_gravity="end"
-                    android:paddingHorizontal="20dp"
-                    android:background="@drawable/spinner_background"
-                    android:spinnerMode="dropdown"/>
+            <Spinner
+                android:id="@+id/spinner_export"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                android:layout_gravity="end"
+                android:paddingHorizontal="20dp"
+                android:background="@drawable/spinner_background"
+                android:spinnerMode="dropdown"/>
 
 
 
 
 
 
-
-
-            </LinearLayout>
 
 
         </LinearLayout>
 
-    </ScrollView>
+
+
+    </LinearLayout>
+
+
+            <ProgressBar
+                android:id="@+id/ProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_marginVertical="20dp"
+                />
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

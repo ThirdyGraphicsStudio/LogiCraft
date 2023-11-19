@@ -6,10 +6,12 @@ import androidx.cardview.widget.CardView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.thirdy.booleanexpression.R;
@@ -67,8 +69,20 @@ public class MainBooleanExpression extends AppCompatActivity {
             }
 
             if(!input.isEmpty()){
-                displayEditText.setError("Invalid Input");
-                displayEditText.setFocusable(true);
+
+                BooleanToTruth t = new BooleanToTruth(input, true);
+                Log.d("result", t.print());
+
+                if(t.print().equals("Error. Invalid expression")){
+                    displayEditText.setError("Please input a valid boolean expression");
+                    displayEditText.setFocusable(true);
+                    Toast.makeText(MainBooleanExpression.this, "Please input a valid boolean expression", Toast.LENGTH_SHORT).show();
+                    return;
+                }else{
+                    Intent intent = new Intent(MainBooleanExpression.this, FormulaBooleanExpression.class);
+                    intent.putExtra("input", input);
+                    startActivity(intent);
+                }
 
             }
 

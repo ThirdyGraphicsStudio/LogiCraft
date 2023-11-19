@@ -3,26 +3,66 @@ package com.thirdy.booleanexpression.BooleanExpression;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
+import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.thirdy.booleanexpression.R;
+import com.thirdy.booleanexpression.TruthTable.FormulaTruthTable;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.List;
 
 public class FormulaBooleanExpression extends AppCompatActivity {
+    private NestedScrollView nestedScrollView;
+    private static final int MY_PERMISSIONS_REQUEST_CODE = 123;
+    String path,imageUri,file_name = "Download";
+    private LinearLayout linearLayout;
+    File myPath;
+    int totalHeight, totalWidth;
+    Bitmap bitmap;
+    private ImageView imgPdf;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.boolean_expression_formula);
+        nestedScrollView = findViewById(R.id.nestedScrollView);
+        linearLayout = findViewById(R.id.ll_output);
+        imgPdf = findViewById(R.id.imgPdf);
+        progressBar = findViewById(R.id.ProgressBar);
+
+        imgPdf.setOnClickListener(view -> {
+            savedPdf();
+        });
 
         //generate table
         generateTruthTable();
@@ -41,50 +81,144 @@ public class FormulaBooleanExpression extends AppCompatActivity {
 
     }
 
+    private void savedPdf() {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(FormulaBooleanExpression.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CODE);
+        }
+
+        takeScreenshot();
+
+    }
+
+
+
+    private  void takeScreenshot(){
+        progressBar.setVisibility(View.VISIBLE);
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Download/");
+        if(!folder.exists()){
+            boolean success = folder.mkdir();
+        }
+
+        path = folder.getAbsolutePath();
+        path = path + "/" + "logicraft" + System.currentTimeMillis() + ".pdf";
+
+        totalHeight = nestedScrollView.getChildAt(0).getHeight();
+        totalWidth = nestedScrollView.getChildAt(0).getWidth();
+        String extr = Environment.getExternalStorageDirectory() + "/logicraft/";
+        File file  = new File(extr);
+
+        //    boolean mkdir = file.mkdir();
+        if(!file.exists()){
+
+        }
+        file.mkdir();
+        String fileName = file_name + ".pdf";
+        myPath = new File(extr, fileName);
+        imageUri = myPath.getPath();
+        bitmap = getBitmapFromView(linearLayout, totalHeight, totalWidth);
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(myPath);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+            fileOutputStream.flush();
+            fileOutputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            //Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.v("PDF", "Message1: " + e.getMessage());
+            Log.v("PDF", "Track1: " + e.getStackTrace());
+
+        }
+        downloadPdf();
+
+    }
+    //6-22
+    public Bitmap getBitmapFromView(View view, int totalHeight, int totalWidth) {
+        Bitmap returnedBitmap = Bitmap.createBitmap(totalWidth, totalHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        Drawable bgDrawable = view.getBackground();
+        if (bgDrawable != null) {
+            bgDrawable.draw(canvas);
+        }else{
+            canvas.drawColor(Color.WHITE);
+        }
+        view.draw(canvas);
+        return returnedBitmap;
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted
+            } else {
+                // Permission denied
+            }
+        }
+    }
+
+
+    private void downloadPdf() {
+        //6-22
+        PdfDocument document = new PdfDocument();
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), 1).create();
+        PdfDocument.Page page = document.startPage(pageInfo);
+        Canvas canvas = page.getCanvas();
+        Paint paint = new Paint();
+        paint.setColor(Color.parseColor("#FFFFFF"));
+        canvas.drawPaint(paint);
+        Bitmap bitmap = Bitmap.createScaledBitmap(this.bitmap,this.bitmap.getWidth(),this.bitmap.getHeight(),true);
+        paint.setColor(Color.WHITE);
+        canvas.drawBitmap(bitmap,0,0,null);
+        document.finishPage(page);
+        File filePath = new File(path);
+        try{
+            document.writeTo(new FileOutputStream(filePath));
+            Toast.makeText(this, "Saved Pdf Successfully! ", Toast.LENGTH_SHORT).show();
+        }catch (Exception e){
+            e.printStackTrace();
+//            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.v("PDF","Message: "+ e.getMessage());
+            Log.v("PDF","Track: "+ e.getStackTrace());
+            progressBar.setVisibility(View.GONE);
+        }
+        document.close();
+        if (myPath.exists())
+            myPath.delete();
+//        openPdf(path);
+    }
+
 
 
     private void generateTruthTable() {
-        TableLayout tableLayout = findViewById(R.id.tableLayout); // Make sure you have a TableLayout in your XML with this ID
+        Intent intent = getIntent();
+        String input = intent.getStringExtra("input");
 
-        // Create a header row
-        TableRow headerRow = new TableRow(this);
-        headerRow.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-        headerRow.setBackgroundColor(getResources().getColor(R.color.primary));
-        String[] headerTexts = {"A", "B", "C", "m", "F"};
-        for (String headerText : headerTexts) {
-            TextView textView = new TextView(this);
-            textView.setText(headerText);
-            textView.setTextColor(getResources().getColor(R.color.white));
-            textView.setGravity(Gravity.CENTER);
-            textView.setPadding(5, 5, 5, 5);
-            headerRow.addView(textView);
-        }
+        // Get data from print method
+        BooleanToTruth table = new BooleanToTruth(input, true);
+        List<List<String>> tableData = table.printTable(); // Get data from print method
 
-        tableLayout.addView(headerRow);
+        TableLayout tableLayout = findViewById(R.id.tableLayout);
 
-        // Add data as rows
-        int[][] data = {
-                {0, 0, 0, 0, 0},
-                {0, 0, 1, 1, 1},
-                {0, 0, 1, 1, 1},
-                {0, 0, 1, 1, 1},
-                {0, 0, 1, 1, 1},
-                {0, 0, 1, 1, 1},
-                {1, 1, 1, 7, 1}
-        };
-
-        for (int[] rowData : data) {
+        for (int rowIndex = 0; rowIndex < tableData.size(); rowIndex++) {
+            List<String> rowData = tableData.get(rowIndex);
             TableRow row = new TableRow(this);
             row.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-            row.setPaddingRelative(0, 2, 0, 2);
 
-            for (int cellData : rowData) {
+            for (String cellData : rowData) {
                 TextView textView = new TextView(this);
-                textView.setText(String.valueOf(cellData));
+                textView.setText(cellData);
                 textView.setGravity(Gravity.CENTER);
                 textView.setPadding(5, 5, 5, 5);
                 textView.setTextSize(10);
-                textView.setTextColor(getResources().getColor(R.color.black));
+                if (rowIndex == 0) {
+                    // Set header row style
+                    textView.setTextColor(getResources().getColor(R.color.white));
+                    row.setBackgroundColor(getResources().getColor(R.color.primary));
+                } else {
+                    textView.setTextColor(getResources().getColor(R.color.black));
+                }
                 row.addView(textView);
             }
 

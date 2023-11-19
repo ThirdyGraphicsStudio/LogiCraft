@@ -3,9 +3,21 @@ package com.thirdy.booleanexpression.TruthTable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
+import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -13,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -29,6 +42,8 @@ import com.thirdy.booleanexpression.R;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -40,13 +55,21 @@ public class FormulaTruthTable extends AppCompatActivity {
 
     private int variableCount;
     private int[] fColumnValues;
+    File myPath;
+    int totalHeight, totalWidth;
 
     private String[] minters;
+    Bitmap bitmap;
 
     private TextView txtResult;
     private ProgressBar progressBar;
     private ImageView imgPdf;
     private TextView txtSolution, txtAnswer;
+    private NestedScrollView nestedScrollView;
+    private static final int MY_PERMISSIONS_REQUEST_CODE = 123;
+    String path,imageUri,file_name = "Download";
+    private LinearLayout linearLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,10 +83,11 @@ public class FormulaTruthTable extends AppCompatActivity {
         txtSolution = findViewById(R.id.txtSolution);
         txtAnswer = findViewById(R.id.txtAnswer);
         imgPdf = findViewById(R.id.imgPdf);
-
+        nestedScrollView = findViewById(R.id.nestedScrollView);
+        linearLayout = findViewById(R.id.ll_output);
 
         imgPdf.setOnClickListener(view -> {
-            Toast.makeText(this, "SAVED AS PDF", Toast.LENGTH_SHORT).show();
+            savedPdf();
         });
 
         //ilagay sa minters yung f values
@@ -93,7 +117,114 @@ public class FormulaTruthTable extends AppCompatActivity {
                 finish();
             }
         });
+    }
 
+    private void savedPdf() {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(FormulaTruthTable.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CODE);
+        }
+
+        takeScreenshot();
+
+    }
+
+
+
+    private  void takeScreenshot(){
+        progressBar.setVisibility(View.VISIBLE);
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Download/");
+        if(!folder.exists()){
+            boolean success = folder.mkdir();
+        }
+
+        path = folder.getAbsolutePath();
+        path = path + "/" + "logicraft" + System.currentTimeMillis() + ".pdf";
+
+        totalHeight = nestedScrollView.getChildAt(0).getHeight();
+        totalWidth = nestedScrollView.getChildAt(0).getWidth();
+        String extr = Environment.getExternalStorageDirectory() + "/logicraft/";
+        File file  = new File(extr);
+
+        //    boolean mkdir = file.mkdir();
+        if(!file.exists()){
+
+        }
+        file.mkdir();
+        String fileName = file_name + ".pdf";
+        myPath = new File(extr, fileName);
+        imageUri = myPath.getPath();
+        bitmap = getBitmapFromView(linearLayout, totalHeight, totalWidth);
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(myPath);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+            fileOutputStream.flush();
+            fileOutputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            //Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.v("PDF", "Message1: " + e.getMessage());
+            Log.v("PDF", "Track1: " + e.getStackTrace());
+
+        }
+        downloadPdf();
+
+    }
+    //6-22
+    public Bitmap getBitmapFromView(View view, int totalHeight, int totalWidth) {
+        Bitmap returnedBitmap = Bitmap.createBitmap(totalWidth, totalHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        Drawable bgDrawable = view.getBackground();
+        if (bgDrawable != null) {
+            bgDrawable.draw(canvas);
+        }else{
+            canvas.drawColor(Color.WHITE);
+        }
+        view.draw(canvas);
+        return returnedBitmap;
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted
+            } else {
+                // Permission denied
+            }
+        }
+    }
+
+
+    private void downloadPdf() {
+        //6-22
+        PdfDocument document = new PdfDocument();
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), 1).create();
+        PdfDocument.Page page = document.startPage(pageInfo);
+        Canvas canvas = page.getCanvas();
+        Paint paint = new Paint();
+        paint.setColor(Color.parseColor("#FFFFFF"));
+        canvas.drawPaint(paint);
+        Bitmap bitmap = Bitmap.createScaledBitmap(this.bitmap,this.bitmap.getWidth(),this.bitmap.getHeight(),true);
+        paint.setColor(Color.WHITE);
+        canvas.drawBitmap(bitmap,0,0,null);
+        document.finishPage(page);
+        File filePath = new File(path);
+        try{
+            document.writeTo(new FileOutputStream(filePath));
+            Toast.makeText(this, "Saved Pdf Successfully! ", Toast.LENGTH_SHORT).show();
+        }catch (Exception e){
+            e.printStackTrace();
+//            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.v("PDF","Message: "+ e.getMessage());
+            Log.v("PDF","Track: "+ e.getStackTrace());
+            progressBar.setVisibility(View.GONE);
+        }
+        document.close();
+        if (myPath.exists())
+            myPath.delete();
+//        openPdf(path);
     }
 
     private void generateTruthTablePreview(int variableCount, int[] fColumnValues) {
