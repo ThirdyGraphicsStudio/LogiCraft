@@ -282,16 +282,101 @@
         <!-- Header with dropdown icon and text -->
 
         <!-- Content that will be shown/hidden -->
-        <TextView
+        <LinearLayout
             android:id="@+id/content_text3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Content goes here"
+            android:orientation="vertical"
             android:padding="8dp"
-            android:visibility="gone" />
+            android:visibility="gone">
+
+            <include layout="@layout/help_boolean_expression"/>
+
+        </LinearLayout>
+
+
+
 
     </LinearLayout>
 
+        <LinearLayout
+            android:layout_marginVertical="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/header4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="3dp"
+                android:foreground="@drawable/ripple"
+
+                android:layout_marginTop="15dp"
+                android:outlineSpotShadowColor="@color/shadow"
+                android:outlineAmbientShadowColor="@color/shadow"
+                android:clickable="true"
+                android:focusable="true"
+                >
+
+                <RelativeLayout
+                    android:padding="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="8dp"
+                        android:text="Logic Diagram"
+                        android:textSize="16sp"
+                        android:textColor="@color/primary"
+                        android:fontFamily="@font/poppinsregular"
+                        />
+
+
+
+                    <ImageView
+                        android:id="@+id/dropdown_icon4"
+
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/add"
+                        app:tint="@color/primary"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        />
+
+                </RelativeLayout>
+
+
+
+            </androidx.cardview.widget.CardView>
+            <!-- Header with dropdown icon and text -->
+
+            <!-- Content that will be shown/hidden -->
+            <LinearLayout
+                android:id="@+id/content_text4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:visibility="gone">
+
+                <include layout="@layout/help_logic_diagram"/>
+
+            </LinearLayout>
+
+
+
+
+        </LinearLayout>
 
 
 

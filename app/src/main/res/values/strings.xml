@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Boolean Expression</string>
+    <string name="app_name">LogiCraft</string>
     <string name="title_activity_main_boolean_expression">MainBooleanExpression</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -160,10 +160,7 @@ Once you have selected the number of variables, a Truth Table input will be gene
 </string>
 
     <string name="boolean_step2">
-<![CDATA[
-
-<p>If you need help with the symbols for Boolean operators, click on the info icon at the upper right side of the screen.</p>
-]]>
+        If you need help with the symbols for Boolean operators, click on the info icon at the upper right side of the screen.
 </string>
 
     <string name="boolean_step3">
@@ -181,12 +178,12 @@ Once you have selected the number of variables, a Truth Table input will be gene
     </string>
 
     <string name="logic_diagram_info">
-<![CDATA[
 
-<p>Explore various logic gates in your logic diagram.</p>
+
+Explore various logic gates in your logic diagram.
 These are logic gate names and their symbols that you will encounter:
-]]>
 </string>
+
     <string name="logic_diagram_saving">
 <![CDATA[
 

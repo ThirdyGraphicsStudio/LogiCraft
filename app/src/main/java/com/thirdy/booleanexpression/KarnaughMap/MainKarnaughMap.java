@@ -270,7 +270,7 @@ public class MainKarnaughMap extends AppCompatActivity implements MyInterface {
         karnaughModels.add(new KarnaughModel("A'B'C'", "A'B'C", "0", "1", "3", "2", "4", "5", "7", "6", Arrays.asList(arrays)));
         karnaughModels.add(new KarnaughModel("A'BC", "A'BC'", "12", "13", "15", "14", "8", "9", "11", "10", Arrays.asList(array2)));
         karnaughModels.add(new KarnaughModel("AB'C'", "AB'C", "16", "17", "19", "18", "20", "21", "23", "22", Arrays.asList(array3)));
-        karnaughModels.add(new KarnaughModel("ABC", "ABC''", "28", "29", "31", "30", "24", "25", "27", "26", Arrays.asList(array4)));
+        karnaughModels.add(new KarnaughModel("ABC", "ABC'", "28", "29", "31", "30", "24", "25", "27", "26", Arrays.asList(array4)));
 
         recyclerView.setAdapter(karnaughAdapter);
     }
@@ -287,8 +287,8 @@ public class MainKarnaughMap extends AppCompatActivity implements MyInterface {
         String[] array6 = {"0", "0", "0", "0","0", "0", "0", "0"};
         String[] array7 = {"0", "0", "0", "0","0", "0", "0", "0"};
         karnaughModels.add(new KarnaughModel("A'B'C'D'", "A'B'C'D", "0", "1", "3", "2", "4", "5", "7", "6", Arrays.asList(arrays)));
-        karnaughModels.add(new KarnaughModel("A'B'CD", "A'B'CD''", "12", "13", "15", "14", "8", "9", "11", "10", Arrays.asList(array1)));
-        karnaughModels.add(new KarnaughModel("A'BC'D''", "A'BC'D", "16", "17", "19", "18", "20", "21", "23", "22", Arrays.asList(array2)));
+        karnaughModels.add(new KarnaughModel("A'B'CD", "A'B'CD'", "12", "13", "15", "14", "8", "9", "11", "10", Arrays.asList(array1)));
+        karnaughModels.add(new KarnaughModel("A'BC'D'", "A'BC'D", "16", "17", "19", "18", "20", "21", "23", "22", Arrays.asList(array2)));
         karnaughModels.add(new KarnaughModel("A'BCD", "A'BCD'", "28", "29", "31", "30", "24", "25", "27", "26", Arrays.asList(array3)));
         karnaughModels.add(new KarnaughModel("AB'C'D'", "AB'C'D", "32", "33", "35", "34", "36", "37", "39", "38", Arrays.asList(array4)));
         karnaughModels.add(new KarnaughModel("AB'CD", "AB'CD'", "44", "45", "47", "46", "40", "41", "43", "42", Arrays.asList(array5)));

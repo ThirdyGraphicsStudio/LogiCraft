@@ -71,7 +71,7 @@ public class Help extends Fragment {
         //boolean expression
 
         final CardView headerText3 = view.findViewById(R.id.header3);
-        final TextView contentText3 = view.findViewById(R.id.content_text3);
+        final LinearLayout contentText3 = view.findViewById(R.id.content_text3);
         final ImageView dropdownIcon3 = view.findViewById(R.id.dropdown_icon3);
 
         headerText3.setOnClickListener(new View.OnClickListener() {
@@ -83,6 +83,25 @@ public class Help extends Fragment {
                 } else {
                     contentText3.setVisibility(View.GONE);
                     dropdownIcon3.setImageResource(R.drawable.add);
+
+                }
+            }
+        });
+
+
+        final CardView headerText4 = view.findViewById(R.id.header4);
+        final LinearLayout contentText4 = view.findViewById(R.id.content_text4);
+        final ImageView dropdownIcon4 = view.findViewById(R.id.dropdown_icon4);
+
+        headerText4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (contentText4.getVisibility() == View.GONE) {
+                    contentText4.setVisibility(View.VISIBLE);
+                    dropdownIcon4.setImageResource(R.drawable.minus);
+                } else {
+                    contentText4.setVisibility(View.GONE);
+                    dropdownIcon4.setImageResource(R.drawable.add);
 
                 }
             }
@@ -112,6 +131,14 @@ public class Help extends Fragment {
 
         TextView karnaughStep4 = view.findViewById(R.id.karnaughStep4);
         karnaughStep4.setText(Html.fromHtml(getString(R.string.karnaugh_step4), Html.FROM_HTML_MODE_LEGACY));
+
+
+        TextView booleanStep1 = view.findViewById(R.id.booleanStep1);
+        booleanStep1.setText(Html.fromHtml(getString(R.string.boolean_step1), Html.FROM_HTML_MODE_LEGACY));
+
+        TextView booleanStep3 = view.findViewById(R.id.booleanStep3);
+        booleanStep3.setText(Html.fromHtml(getString(R.string.boolean_step3), Html.FROM_HTML_MODE_LEGACY));
+
 
         return  view;
 
