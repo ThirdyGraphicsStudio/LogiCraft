@@ -32,6 +32,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
 import com.thirdy.booleanexpression.Algorithm.Solver;
 import com.thirdy.booleanexpression.Algorithm.Term;
 import com.thirdy.booleanexpression.R;
@@ -40,13 +41,33 @@ import com.thirdy.booleanexpression.TruthTable.FormulaTruthTable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class FormulaKarnaughMap extends AppCompatActivity {
     private int variableCount;
@@ -812,7 +833,6 @@ public class FormulaKarnaughMap extends AppCompatActivity {
 
     public void answer(String minterms, String dontCares) {
 
-
         Solver s = new Solver(minterms, dontCares);
 
         s.solve();
@@ -848,11 +868,229 @@ public class FormulaKarnaughMap extends AppCompatActivity {
 
         Log.d("StepLog", builder.toString());
 
-
         txtSolution.setText(builder.toString());
         txtAnswer.setText(s.printResults());
+
+        // Split the input text by '\n' to separate lines
+        String[] lines = s.printResults().split("\n");
+
+        // Get the last line (assuming it contains the expression)
+        String lastLine = lines[lines.length - 1];
+
+        // Remove leading and trailing spaces
+        String expression = lastLine.trim();
+
+
+        //remove f
+        // Find the opening and closing parentheses
+        int startIndex = expression.indexOf('(');
+        int endIndex = expression.indexOf(')');
+
+        // Check if both opening and closing parentheses are found
+        if (startIndex != -1 && endIndex != -1) {
+            // Extract the expression between the parentheses
+            expression = expression.substring(startIndex + 1, endIndex);
+
+            // Remove leading and trailing spaces
+            expression = expression.trim();
+
+
+            Log.d("StepLog", expression);
+            Log.d("StepLog", convertToBoolean(expression));
+
+
+
+//            <TextView
+//            android:id="@+id/txtSimplified"
+//            android:layout_width="wrap_content"
+//            android:layout_height="wrap_content"
+//            android:text="Simplified Expression: "
+//            android:layout_marginTop="10dp"
+//            android:textSize="12sp"
+//            android:textColor="@color/black"
+//            android:fontFamily="@font/poppinsregular"
+//                    />
+
+            TextView txtSimplified = findViewById(R.id.txtSimplified);
+            txtSimplified.setVisibility(View.VISIBLE);
+            txtSimplified.setText("Simplified Expression: " + convertToBoolean(expression));
+
+
+
+
+            String encodedQuery = null;
+            try {
+                encodedQuery = URLEncoder.encode(convertToBoolean(expression), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            fetchWolframAlphaResult(encodedQuery);
+        }else{
+            Log.d("StepLog", "No parentheses found in the input text.");
+        }
+
     }
 
+
+    private void fetchWolframAlphaResult(String query) {
+        progressBar.setVisibility(View.VISIBLE);
+        String appID = "6QWUPQ-TJ7L5TAT2V"; // Replace with your Wolfram Alpha App ID
+        String url = "https://api.wolframalpha.com/v2/query?appid=" + appID + "&input=logic+circuit+" + query + "&format=image";
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    // Handle error
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(FormulaKarnaughMap.this, "Can Not Make Logic Diagram", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    String responseData = response.body().string();
+                    // Parse the XML to find the image URL
+                    String imageUrl = extractImageUrl(responseData);
+                    Log.d("StepLog", imageUrl);
+                    // Update the ImageView on the UI thread
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.GONE);
+                            ImageView imageView = findViewById(R.id.myImageView);
+                            Picasso.get().load(imageUrl).into(imageView);
+                        }
+                    });
+                }
+            }
+
+            private String extractImageUrl(String xmlResponse) {
+                try {
+                    // Create a new DocumentBuilderFactory
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+
+                    // Parse the XML
+                    InputStream is = new ByteArrayInputStream(xmlResponse.getBytes());
+                    Document doc = builder.parse(is);
+                    NodeList imgTags = doc.getElementsByTagName("img");
+
+                    // Loop through <img> tags to find the desired image
+                    for (int i = 0; i < imgTags.getLength(); i++) {
+                        Node node = imgTags.item(i);
+                        if (node.getNodeType() == Node.ELEMENT_NODE) {
+                            Element element = (Element) node;
+                            // Check if this is the image you want (based on alt/title/other attributes)
+                            if (element.getAttribute("alt").contains("Logic circuit")) {
+                                return element.getAttribute("src").replace("&amp;", "&");
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null; // Or a default image URL
+            }
+
+
+        });
+    }
+
+
+    private String convertToBoolean(String expression) {
+        // Split the input expression by '+' to get individual terms
+        String[] terms = expression.split("\\s*\\+\\s*");
+
+        StringBuilder outputExpression = new StringBuilder();
+
+        for (int i = 0; i < terms.length; i++) {
+            String term = terms[i];
+            StringBuilder convertedTerm = new StringBuilder();
+
+            boolean previousWasNegatedVariable = false;
+
+            for (int j = 0; j < term.length(); j++) {
+                char character = term.charAt(j);
+
+                if (character == '\'') {
+                    // If it's a prime (negation), prepend '~' to the last character in convertedTerm
+                    convertedTerm.insert(convertedTerm.length() - 1, '~');
+                    previousWasNegatedVariable = true; // Marking that the last variable was negated
+                } else {
+                    // Check if the current and previous characters are letters or if previous was a negated variable
+                    if (j > 0 && (Character.isLetter(character) || previousWasNegatedVariable)) {
+                        // If it's a letter or previous was a negated variable, insert "OR"
+                        convertedTerm.append(" OR ");
+                    }
+                    convertedTerm.append(character);
+                    previousWasNegatedVariable = false; // Resetting the flag
+                }
+            }
+            // Add the converted term to the output expression
+            if (i > 0) {
+                outputExpression.append(" AND ");
+            }
+            outputExpression.append('(').append(convertedTerm).append(')');
+        }
+        return outputExpression.toString();
+    }
+
+    public static String transformExpression(String input) {
+        // Define a regular expression pattern for (Variable1Variable2...) AND (Variable1Variable2...)
+        String pattern = "\\((\\w+)\\) AND \\((\\w+)\\)";
+
+        // Create a pattern matcher
+        Pattern regex = Pattern.compile(pattern);
+        Matcher matcher = regex.matcher(input);
+
+        // Initialize the result
+        StringBuilder result = new StringBuilder();
+
+        int previousEnd = 0;
+
+        // Find and replace matching patterns
+        while (matcher.find()) {
+            // Append the part of the input before the match
+            result.append(input.substring(previousEnd, matcher.start()));
+
+            // Extract variables
+            String variables1 = matcher.group(1);
+            String variables2 = matcher.group(2);
+
+            // Split the variables into individual characters
+            String[] vars1 = variables1.split("(?!^)");
+            String[] vars2 = variables2.split("(?!^)");
+
+            // Build the replacement string
+            StringBuilder replacement = new StringBuilder();
+            for (int i = 0; i < vars1.length; i++) {
+                if (i > 0) {
+                    replacement.append(" OR ");
+                }
+                replacement.append(vars1[i]).append(" OR ~").append(vars2[i]);
+            }
+
+            // Append the replacement string
+            result.append("(").append(replacement).append(")");
+
+            // Update the previous end index
+            previousEnd = matcher.end();
+        }
+
+        // Append the remaining part of the input
+        result.append(input.substring(previousEnd));
+
+        return result.toString();
+    }
     public void answer2(String minterms, String dontCares) {
 
 
