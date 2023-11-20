@@ -123,6 +123,8 @@ public class MainTruthTable extends AppCompatActivity {
             row.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
             row.setPaddingRelative(0, 2, 0, 2);
 
+
+
             final int rowIdx = i; // Capture the row index for use in the lambda expression
 
             for (int j = 0; j < variableCount + 2; j++) { // Iterate over each column
@@ -141,6 +143,7 @@ public class MainTruthTable extends AppCompatActivity {
 
                 // If this is the 'F' column, make it interactive
                 if (j == variableCount + 1) {
+                    textView.setBackgroundColor(getResources().getColor(R.color.inputfield));
                     textView.setTag("F" + i);
                     textView.setOnClickListener(v -> {
                         TextView tv = (TextView) v;

@@ -98,8 +98,9 @@
         >
 
                 <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
                     android:src="@drawable/truth_icon"
                    />
 
@@ -145,8 +146,9 @@
                 >
 
                 <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
                     android:src="@drawable/karnaugh_icon"
                     />
 
@@ -191,8 +193,9 @@
                 >
 
                 <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
                     android:src="@drawable/boolean_icon"
                     />
 

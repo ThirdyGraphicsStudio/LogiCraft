@@ -48,9 +48,38 @@
         android:layout_height="wrap_content"
         android:textSize="13sp"
         android:fontFamily="@font/poppinsregular"
-        android:text="@string/boolean_step2"
+        android:text="@string/logic_diagram_saving"
         android:textColor="@color/black"
         />
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:paddingHorizontal="20dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/boolean_exp1" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/poppinsbold"
+        android:text="Save PDF"
+        android:textColor="@color/black"
+        />
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:fontFamily="@font/poppinsregular"
+        android:text="In the same menu, select 'Save PDF' to save the entire solution, including your logic diagram, in PDF format."
+        android:textColor="@color/black"
+        />
 
 </LinearLayout>

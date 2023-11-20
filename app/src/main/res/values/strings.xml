@@ -185,10 +185,8 @@ These are logic gate names and their symbols that you will encounter:
 </string>
 
     <string name="logic_diagram_saving">
-<![CDATA[
+Once the solution is generated, you can click on the pdf icon at the toolbar to save the entire solution, including your logic diagram, in PDF format.
 
-<p>Once the solution is generated, you can click on the pdf icon at the toolbar to save the entire solution, including your logic diagram, in PDF format.</p>
-]]>
 </string>
     <string-array name="dropdown_items">
         <item>SOP</item>

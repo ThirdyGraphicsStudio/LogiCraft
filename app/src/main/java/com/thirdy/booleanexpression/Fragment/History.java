@@ -157,7 +157,11 @@ public class History extends Fragment implements MyInterface {
     @Override
     public void onItemClick(int pos, String categories) {
         if (!categories.equals("history")) return;
-        HistoryModel selectedHistory = historyModels.get(pos -1);
+        if (pos <= 0 || pos > historyModels.size()) {
+            Log.e("History", "Invalid position: " + pos);
+            return;
+        }
+        HistoryModel selectedHistory = historyModels.get(pos-1);
         String expression = selectedHistory.getName();
         int variableCount = selectedHistory.getVariable();
         Intent intent;

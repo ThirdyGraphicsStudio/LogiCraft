@@ -112,18 +112,18 @@ public class FormulaKarnaughMap extends AppCompatActivity {
 
 
 
-        ArrayList<Integer> indexes = new ArrayList<>();
+        ArrayList<String> indexes = new ArrayList<>();
 
         // Iterate through fColumnValues
         for (int i = 0; i < fColumnValues.length; i++) {
-            if (Integer.parseInt(fColumnValues[i]) == 1) {
-                indexes.add(i); // Add index to the list if value is 1
+            if (fColumnValues[i].equals("1")) {
+                indexes.add(String.valueOf(i)); // Add index to the list if value is 1
             }
         }
 
         // Convert the list of indexes to a string representation with commas
         StringBuilder builder = new StringBuilder();
-        for (int index : indexes) {
+        for (String index : indexes) {
             builder.append(index).append(", ");
         }
 
@@ -662,7 +662,7 @@ public class FormulaKarnaughMap extends AppCompatActivity {
                 String selectedItem = parent.getItemAtPosition(position).toString();
                 // Do something with the selected item
                 String fColumnValuesString = String.join(", ", fColumnValues);
-
+                TextView karnaugh0 = findViewById(R.id.karnaugh0);
 
                 String dontcares = "";
                 for (int i = 0; i < fColumnValues.length; i++) {
@@ -679,6 +679,8 @@ public class FormulaKarnaughMap extends AppCompatActivity {
 
 
                 if(selectedItem.equals("SOP")) {
+
+                    karnaugh0.setText("Group together the 1\\'s in the K-map to simplify the expression.");
                     generateKmapTable(variableCount, "1");
 
                     String minterms = "";
@@ -703,6 +705,9 @@ public class FormulaKarnaughMap extends AppCompatActivity {
 
 
                 }else {
+                    karnaugh0.setText("Group together the 0\\'s in the K-map to simplify the expression.");
+
+
                     txtResult.setText("");
                     generateKmapTable(variableCount, "0");
 
