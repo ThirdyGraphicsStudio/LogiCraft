@@ -8,16 +8,19 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -310,34 +313,45 @@ public class FormulaTruthTable extends AppCompatActivity {
 
         // Generate the data for the truth table based on the number of variables
         int rowCount = (int) Math.pow(2, variableCount); // Calculate the number of rows for the table
-        int[][] rows = new int[rowCount][variableCount + 2]; // Initialize your rows array with the correct size
+        // Change rows to an Object array to accommodate both Integers and Strings
+        Object[][] rows = new Object[rowCount][variableCount + 2];
 
         for (int i = 0; i < rowCount; i++) {
             TableRow row = new TableRow(this);
-
             row.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
             row.setPaddingRelative(0, 2, 0, 2);
 
+            // Create the 'm' column TextView first
+            TextView mTextView = new TextView(this);
+            mTextView.setText(String.valueOf(i)); // The value for 'm' is the row number
+            mTextView.setGravity(Gravity.CENTER);
+            mTextView.setPadding(10, 10, 10, 10);
+            mTextView.setTextSize(14);
+            mTextView.setTextColor(getResources().getColor(R.color.black));
+            row.addView(mTextView);
 
-
-            final int rowIdx = i; // Capture the row index for use in the lambda expression
-
-            for (int j = 0; j < variableCount + 2; j++) { // Iterate over each column
+            // Now create TextViews for each variable column
+            for (int j = 0; j < variableCount; j++) {
                 TextView textView = new TextView(this);
-                if (j == 0) { // For 'm' column
-                    rows[i][j] = i; // 'm' column holds the row number
-                } else if (j < variableCount) { // For variable columns
-                    rows[i][j] = (i / (int) Math.pow(2, variableCount - j - 1)) % 2; // Calculate truth value
-                }// 'F' column will be handled separately as it's interactive
+                // Calculate the value for this variable and set the text
+                int value = (i / (int) Math.pow(2, variableCount - j - 1)) % 2;
+                textView.setText(String.valueOf(value));
 
-                textView.setText(String.valueOf(rows[i][j]));
                 textView.setGravity(Gravity.CENTER);
                 textView.setPadding(10, 10, 10, 10);
                 textView.setTextSize(14);
                 textView.setTextColor(getResources().getColor(R.color.black));
-
                 row.addView(textView);
             }
+
+            // Create the 'F' column TextView last
+            TextView fTextView = new TextView(this);
+            fTextView.setText(String.valueOf(fColumnValues[i])); // Set the text from the provided F column values
+            fTextView.setGravity(Gravity.CENTER);
+            fTextView.setPadding(10, 10, 10, 10);
+            fTextView.setTextSize(14);
+            fTextView.setTextColor(getResources().getColor(R.color.black));
+            row.addView(fTextView);
 
             tableLayout.addView(row);
         }
@@ -594,21 +608,8 @@ public class FormulaTruthTable extends AppCompatActivity {
         };
 
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Get selected item
-                String selectedItem = parent.getItemAtPosition(position).toString();
 
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
     }
 
 
@@ -709,7 +710,7 @@ public class FormulaTruthTable extends AppCompatActivity {
                 throw new RuntimeException(e);
             }
             //TODO Remove Comment
-            //fetchWolframAlphaResult(encodedQuery);
+            fetchWolframAlphaResult(encodedQuery);
         }else{
             Log.d("StepLog", "No parentheses found in the input text.");
         }
@@ -719,7 +720,7 @@ public class FormulaTruthTable extends AppCompatActivity {
 
     private void fetchWolframAlphaResult(String query) {
         progressBar.setVisibility(View.VISIBLE);
-        String appID = "6QWUPQ-TJ7L5TAT2V"; // Replace with your Wolfram Alpha App ID
+        String appID = "LUQHKE-P74YUH66QT";
         String url = "https://api.wolframalpha.com/v2/query?appid=" + appID + "&input=logic+circuit+" + query + "&format=image";
 
         OkHttpClient client = new OkHttpClient();
@@ -745,14 +746,35 @@ public class FormulaTruthTable extends AppCompatActivity {
                     String responseData = response.body().string();
                     // Parse the XML to find the image URL
                     String imageUrl = extractImageUrl(responseData);
-                    Log.d("StepLog", imageUrl);
                     // Update the ImageView on the UI thread
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            progressBar.setVisibility(View.GONE);
-                            ImageView imageView = findViewById(R.id.myImageView);
-                            Picasso.get().load(imageUrl).into(imageView);
+                            LinearLayout containerLogicDiagram = findViewById(R.id.containerLogicDiagram);
+                            MaterialButton btnSave = findViewById(R.id.btnSave);
+                            try{
+                                Log.d("StepLog", imageUrl);
+
+                                progressBar.setVisibility(View.GONE);
+                                ImageView imageView = findViewById(R.id.myImageView);
+                                Picasso.get().load(imageUrl).into(imageView);
+                                containerLogicDiagram.setVisibility(View.VISIBLE);
+
+                                btnSave.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                                        File file = savedDiagram(bitmap);
+                                        saveToGallery(file);
+                                    }
+                                });
+
+                            }catch (Exception e) {
+                                containerLogicDiagram.setVisibility(View.GONE);
+                                e.printStackTrace();
+                                progressBar.setVisibility(View.GONE);
+                                Toast.makeText(FormulaTruthTable.this, "Can Not Make Logic Diagram", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
                 }
@@ -789,6 +811,48 @@ public class FormulaTruthTable extends AppCompatActivity {
 
         });
     }
+
+    private File  savedDiagram(Bitmap bitmap) {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(FormulaTruthTable.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CODE);
+        }
+        File filepath = Environment.getExternalStorageDirectory();
+        File dir = new File(filepath.getAbsolutePath() + "/Download/");
+        dir.mkdirs();
+        String fileName = System.currentTimeMillis() + ".jpg";
+        File file = new File(dir, fileName);
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            outputStream.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return file;
+
+    }
+
+    private void saveToGallery(File file) {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        values.put(MediaStore.MediaColumns.DATA, file.getAbsolutePath());
+
+        getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        Toast.makeText(this, "Saved Logic Diagram Successfully! ", Toast.LENGTH_SHORT).show();
+    }
+
+
 
 
     private String convertToBoolean(String expression) {

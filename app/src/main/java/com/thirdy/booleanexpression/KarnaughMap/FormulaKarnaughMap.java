@@ -8,15 +8,18 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -32,6 +35,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.button.MaterialButton;
 import com.squareup.picasso.Picasso;
 import com.thirdy.booleanexpression.Algorithm.Solver;
 import com.thirdy.booleanexpression.Algorithm.Term;
@@ -936,7 +940,7 @@ public class FormulaKarnaughMap extends AppCompatActivity {
                 throw new RuntimeException(e);
             }
             //TODO ERASE THIS COMMNET LATE
-            //fetchWolframAlphaResult(encodedQuery);
+            fetchWolframAlphaResult(encodedQuery);
         }else{
             Log.d("StepLog", "No parentheses found in the input text.");
         }
@@ -972,16 +976,38 @@ public class FormulaKarnaughMap extends AppCompatActivity {
                     String responseData = response.body().string();
                     // Parse the XML to find the image URL
                     String imageUrl = extractImageUrl(responseData);
-                    Log.d("StepLog", imageUrl);
                     // Update the ImageView on the UI thread
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            progressBar.setVisibility(View.GONE);
-                            ImageView imageView = findViewById(R.id.myImageView);
-                            Picasso.get().load(imageUrl).into(imageView);
+                            LinearLayout containerLogicDiagram = findViewById(R.id.containerLogicDiagram);
+                            MaterialButton btnSave = findViewById(R.id.btnSave);
+                            try{
+                                Log.d("StepLog", imageUrl);
+
+                                progressBar.setVisibility(View.GONE);
+                                ImageView imageView = findViewById(R.id.myImageView);
+                                Picasso.get().load(imageUrl).into(imageView);
+                                containerLogicDiagram.setVisibility(View.VISIBLE);
+
+                                btnSave.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                                        File file = savedDiagram(bitmap);
+                                        saveToGallery(file);
+                                    }
+                                });
+
+                            }catch (Exception e) {
+                                containerLogicDiagram.setVisibility(View.GONE);
+                                e.printStackTrace();
+                                progressBar.setVisibility(View.GONE);
+                                Toast.makeText(FormulaKarnaughMap.this, "Can Not Make Logic Diagram", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
+
                 }
             }
 
@@ -1158,6 +1184,45 @@ public class FormulaKarnaughMap extends AppCompatActivity {
 //        txtAnswer.setText(s.printResults());
     }
 
+    private File  savedDiagram(Bitmap bitmap) {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(FormulaKarnaughMap.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CODE);
+        }
+        File filepath = Environment.getExternalStorageDirectory();
+        File dir = new File(filepath.getAbsolutePath() + "/Download/");
+        dir.mkdirs();
+        String fileName = System.currentTimeMillis() + ".jpg";
+        File file = new File(dir, fileName);
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            outputStream.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return file;
+
+    }
+
+    private void saveToGallery(File file) {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        values.put(MediaStore.MediaColumns.DATA, file.getAbsolutePath());
+
+        getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Toast.makeText(this, "Saved Logic Diagram Successfully! ", Toast.LENGTH_SHORT).show();
+
+    }
 
 
 }
