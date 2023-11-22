@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.thirdy.booleanexpression.Adapter.KarnaughAdapter;
@@ -229,6 +230,12 @@ public class MainKarnaughMap extends AppCompatActivity implements MyInterface {
         for (int i = 0; i < fColumnValues.length; i++) {
             Log.d("TAG", "fcolumn"  + fColumnValues[i]);
         }
+
+        if(Arrays.stream(fColumnValues).allMatch(value -> value.equals(0)) || Arrays.stream(fColumnValues).allMatch(value -> value.equals(1)) ||  Arrays.stream(fColumnValues).allMatch(value -> value.equals("x"))){
+            Toast.makeText(this, "Please input a valid truth table", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         HistoryTaskTable historyTaskTable = new HistoryTaskTable(this);
         historyTaskTable.insertData("Karnaugh Map Input", Arrays.toString(fColumnValues), variables);
 

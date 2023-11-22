@@ -707,7 +707,8 @@ public class FormulaTruthTable extends AppCompatActivity {
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }
-            fetchWolframAlphaResult(encodedQuery);
+            //TODO Remove Comment
+            //fetchWolframAlphaResult(encodedQuery);
         }else{
             Log.d("StepLog", "No parentheses found in the input text.");
         }

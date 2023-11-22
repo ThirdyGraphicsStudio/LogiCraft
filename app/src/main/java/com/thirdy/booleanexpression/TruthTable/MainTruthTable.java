@@ -13,6 +13,7 @@ import android.widget.PopupMenu;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.thirdy.booleanexpression.DatabaseHelper.HistoryTaskTable;
@@ -164,7 +165,6 @@ public class MainTruthTable extends AppCompatActivity {
         //when the user click generate button
         MaterialButton btnGenerate = findViewById(R.id.btnGenerate);
 
-
         btnGenerate.setOnClickListener(v -> {
 
 
@@ -173,6 +173,11 @@ public class MainTruthTable extends AppCompatActivity {
             int[] fColumnValues = new int[rowCount];
             for (int i = 0; i < rowCount; i++) {
                 fColumnValues[i] = rows[i][variableCount + 1]; // Assuming this is where the "F" column is
+            }
+
+            if(Arrays.stream(fColumnValues).allMatch(value -> value == 0) || Arrays.stream(fColumnValues).allMatch(value -> value == 1)){
+                Toast.makeText(this, "Please input a valid truth table", Toast.LENGTH_SHORT).show();
+                return;
             }
 
             HistoryTaskTable historyTaskTable = new HistoryTaskTable(this);
