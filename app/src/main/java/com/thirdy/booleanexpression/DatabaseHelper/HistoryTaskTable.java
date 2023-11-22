@@ -30,7 +30,7 @@ public class HistoryTaskTable {
     // Query data
     public Cursor getData() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        return db.rawQuery("SELECT * FROM history", null);
+        return db.rawQuery("SELECT * FROM history ORDER BY date DESC", null);
     }
 
 
