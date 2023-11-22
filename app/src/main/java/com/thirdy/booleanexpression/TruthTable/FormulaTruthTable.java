@@ -698,7 +698,7 @@ public class FormulaTruthTable extends AppCompatActivity {
 
            TextView txtSimplified = findViewById(R.id.txtSimplified);
            txtSimplified.setVisibility(View.VISIBLE);
-           txtSimplified.setText("Simplified Expression: " + convertToBoolean(expression));
+           txtSimplified.setText("INTERPRET: \n " + convertToBoolean(expression));
 
 
 

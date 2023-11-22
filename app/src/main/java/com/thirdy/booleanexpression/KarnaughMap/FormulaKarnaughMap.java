@@ -928,7 +928,7 @@ public class FormulaKarnaughMap extends AppCompatActivity {
 
             TextView txtSimplified = findViewById(R.id.txtSimplified);
             txtSimplified.setVisibility(View.VISIBLE);
-            txtSimplified.setText("Simplified Expression: " + convertToBoolean(expression));
+            txtSimplified.setText("INTERPRET: \n" + convertToBoolean(expression));
 
 
 
@@ -1224,5 +1224,99 @@ public class FormulaKarnaughMap extends AppCompatActivity {
 
     }
 
+    private void simplify(String query) {
+        progressBar.setVisibility(View.VISIBLE);
+        String appID = "6QWUPQ-TJ7L5TAT2V"; // Replace with your Wolfram Alpha App ID
+        String url = "https://api.wolframalpha.com/v2/query?appid=" + appID + "&input=simplify+" + query + "&format=image";
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    // Handle error
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(FormulaKarnaughMap.this, "Can Not Make Logic Diagram", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    String responseData = response.body().string();
+                    // Parse the XML to find the image URL
+                    String imageUrl = extractImageUrl(responseData);
+                    // Update the ImageView on the UI thread
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            LinearLayout containerLogicDiagram = findViewById(R.id.containerLogicDiagram);
+                            MaterialButton btnSave = findViewById(R.id.btnSave);
+                            try{
+                                Log.d("StepLog", imageUrl);
+
+                                progressBar.setVisibility(View.GONE);
+                                ImageView imageView = findViewById(R.id.myImageView);
+                                Picasso.get().load(imageUrl).into(imageView);
+                                containerLogicDiagram.setVisibility(View.VISIBLE);
+
+                                btnSave.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                                        File file = savedDiagram(bitmap);
+                                        saveToGallery(file);
+                                    }
+                                });
+
+                            }catch (Exception e) {
+                                containerLogicDiagram.setVisibility(View.GONE);
+                                e.printStackTrace();
+                                progressBar.setVisibility(View.GONE);
+                                Toast.makeText(FormulaKarnaughMap.this, "Can Not Make Logic Diagram", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+                }
+            }
+
+            private String extractImageUrl(String xmlResponse) {
+                try {
+                    // Create a new DocumentBuilderFactory
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+
+                    // Parse the XML
+                    InputStream is = new ByteArrayInputStream(xmlResponse.getBytes());
+                    Document doc = builder.parse(is);
+                    NodeList imgTags = doc.getElementsByTagName("img");
+
+                    // Loop through <img> tags to find the desired image
+                    for (int i = 0; i < imgTags.getLength(); i++) {
+                        Node node = imgTags.item(i);
+                        if (node.getNodeType() == Node.ELEMENT_NODE) {
+                            Element element = (Element) node;
+                            // Check if this is the image you want (based on alt/title/other attributes)
+                            if (element.getAttribute("alt").contains("Logic circuit")) {
+                                return element.getAttribute("src").replace("&amp;", "&");
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null; // Or a default image URL
+            }
+
+
+        });
+    }
 
 }
