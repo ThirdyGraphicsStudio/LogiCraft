@@ -287,11 +287,12 @@ public class FormulaTruthTable extends AppCompatActivity {
 
         // Define header texts dynamically based on the number of variables
         // Dynamic header based on the number of variables
-        String[] headerTexts = new String[variableCount + 2]; // +2 for 'm' and 'F' columns
-        for (int i = 0; i < variableCount; i++) {
-            headerTexts[i] = String.valueOf((char) ('A' + i)); // Create header labels dynamically
+        // Adjusted header texts with 'm' at the beginning
+        String[] headerTexts = new String[variableCount + 2]; // +1 for 'm' and +1 for 'F'
+        headerTexts[0] = "m";
+        for (int i = 1; i <= variableCount; i++) {
+            headerTexts[i] = String.valueOf((char) ('A' + i - 1));
         }
-        headerTexts[variableCount] = "m";
         headerTexts[variableCount + 1] = "F";
 
         // Add header texts to the header row
@@ -317,17 +318,17 @@ public class FormulaTruthTable extends AppCompatActivity {
             row.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
             row.setPaddingRelative(0, 2, 0, 2);
 
+
+
             final int rowIdx = i; // Capture the row index for use in the lambda expression
 
             for (int j = 0; j < variableCount + 2; j++) { // Iterate over each column
                 TextView textView = new TextView(this);
-                if (j < variableCount) { // For variable columns
-                    rows[i][j] = (i / (int) Math.pow(2, variableCount - j - 1)) % 2; // Calculate truth value
-                } else if (j == variableCount) { // For 'm' column
+                if (j == 0) { // For 'm' column
                     rows[i][j] = i; // 'm' column holds the row number
-                } else if (j == variableCount + 1) {
-                    rows[i][j] = fColumnValues[i];
-                } // 'F' column will be handled separately as it's interactive
+                } else if (j < variableCount) { // For variable columns
+                    rows[i][j] = (i / (int) Math.pow(2, variableCount - j - 1)) % 2; // Calculate truth value
+                }// 'F' column will be handled separately as it's interactive
 
                 textView.setText(String.valueOf(rows[i][j]));
                 textView.setGravity(Gravity.CENTER);

@@ -423,11 +423,12 @@ public class FormulaKarnaughMap extends AppCompatActivity {
 
         // Define header texts dynamically based on the number of variables
         // Dynamic header based on the number of variables
-        String[] headerTexts = new String[variableCount + 2]; // +2 for 'm' and 'F' columns
-        for (int i = 0; i < variableCount; i++) {
-            headerTexts[i] = String.valueOf((char) ('A' + i)); // Create header labels dynamically
+        // Adjusted header texts with 'm' at the beginning
+        String[] headerTexts = new String[variableCount + 2]; // +1 for 'm' and +1 for 'F'
+        headerTexts[0] = "m";
+        for (int i = 1; i <= variableCount; i++) {
+            headerTexts[i] = String.valueOf((char) ('A' + i - 1));
         }
-        headerTexts[variableCount] = "m";
         headerTexts[variableCount + 1] = "F";
 
         // Add header texts to the header row
@@ -443,6 +444,7 @@ public class FormulaKarnaughMap extends AppCompatActivity {
 
         tableLayout.addView(headerRow);
 
+
         // Generate the data for the truth table based on the number of variables
         int rowCount = (int) Math.pow(2, variableCount); // Calculate the number of rows for the table
         // Change rows to an Object array to accommodate both Integers and Strings
@@ -453,28 +455,37 @@ public class FormulaKarnaughMap extends AppCompatActivity {
             row.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
             row.setPaddingRelative(0, 2, 0, 2);
 
-            for (int j = 0; j < variableCount + 2; j++) {
+            // Create the 'm' column TextView first
+            TextView mTextView = new TextView(this);
+            mTextView.setText(String.valueOf(i)); // The value for 'm' is the row number
+            mTextView.setGravity(Gravity.CENTER);
+            mTextView.setPadding(10, 10, 10, 10);
+            mTextView.setTextSize(14);
+            mTextView.setTextColor(getResources().getColor(R.color.black));
+            row.addView(mTextView);
+
+            // Now create TextViews for each variable column
+            for (int j = 0; j < variableCount; j++) {
                 TextView textView = new TextView(this);
-
-                if (j < variableCount) {
-                    rows[i][j] = (i / (int) Math.pow(2, variableCount - j - 1)) % 2;
-                } else if (j == variableCount) {
-                    rows[i][j] = i;
-                } else if (j == variableCount + 1) {
-                    // Here, you assign a String value to the last column
-                    rows[i][j] = fColumnValues[i]; // Replace with the string value you want to display
-                }
-
-                // Set the text of the TextView to the string representation of the value
-                textView.setText(String.valueOf(rows[i][j]));
+                // Calculate the value for this variable and set the text
+                int value = (i / (int) Math.pow(2, variableCount - j - 1)) % 2;
+                textView.setText(String.valueOf(value));
 
                 textView.setGravity(Gravity.CENTER);
                 textView.setPadding(10, 10, 10, 10);
                 textView.setTextSize(14);
                 textView.setTextColor(getResources().getColor(R.color.black));
-
                 row.addView(textView);
             }
+
+            // Create the 'F' column TextView last
+            TextView fTextView = new TextView(this);
+            fTextView.setText(fColumnValues[i]); // Set the text from the provided F column values
+            fTextView.setGravity(Gravity.CENTER);
+            fTextView.setPadding(10, 10, 10, 10);
+            fTextView.setTextSize(14);
+            fTextView.setTextColor(getResources().getColor(R.color.black));
+            row.addView(fTextView);
 
             tableLayout.addView(row);
         }
@@ -924,7 +935,8 @@ public class FormulaKarnaughMap extends AppCompatActivity {
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }
-            fetchWolframAlphaResult(encodedQuery);
+            //TODO ERASE THIS COMMNET LATE
+            //fetchWolframAlphaResult(encodedQuery);
         }else{
             Log.d("StepLog", "No parentheses found in the input text.");
         }
