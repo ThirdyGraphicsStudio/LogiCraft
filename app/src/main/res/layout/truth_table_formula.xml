@@ -353,11 +353,12 @@
 
                         <!-- SIMPlify Expression-->
                         <LinearLayout
+                            android:visibility="gone"
+                            android:id="@+id/container_simplify"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:layout_marginVertical="20dp"
-                            android:visibility="gone"
                             >
 
                             <TextView
@@ -385,20 +386,23 @@
                                 android:layout_height="wrap_content"
                                 android:text="F = A + B’C"
                                 android:textSize="12sp"
+                                android:visibility="gone"
                                 android:textColor="@color/black"
                                 android:fontFamily="@font/poppinsbold"
                                 />
 
                             <TextView
+                                android:visibility="gone"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Solution"
+                                android:text="Answer"
                                 android:textSize="12sp"
                                 android:textColor="@color/primary"
                                 android:fontFamily="@font/poppinsmedium"
                                 />
 
                             <TextView
+                                android:visibility="gone"
                                 android:layout_marginTop="10dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -410,7 +414,6 @@
 
                             <!--            Table-->
                             <androidx.cardview.widget.CardView
-                                android:visibility="gone"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginVertical="10dp"
@@ -421,9 +424,10 @@
                                 >
 
                                 <TextView
+                                    android:id="@+id/txtSimplifiedExpression"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="F = A + B’C"
+                                    android:text=""
                                     android:textSize="12sp"
                                     android:textColor="@color/primary"
                                     android:fontFamily="@font/poppinsbold"
@@ -437,74 +441,75 @@
                         <!-- Logic Diagram-->
 
 
-                        <LinearLayout
-                            android:id="@+id/containerLogicDiagram"
-                            android:visibility="gone"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginBottom="50dp"
-                            >
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Logic Diagram"
-                                android:textSize="16sp"
-                                android:textColor="@color/primary"
-                                android:fontFamily="@font/poppinssemibold"
-                                />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/logic_diagram_description"
-                                android:textSize="12sp"
-                                android:textColor="@color/black"
-                                android:fontFamily="@font/poppinsregular"
-                                />
-
-                            <HorizontalScrollView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                >
-
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:orientation="vertical"
-                                    >
-                                    <ImageView
-                                        android:id="@+id/myImageView"
-                                        android:layout_width="420dp"
-                                        android:layout_height="420dp"/>
-                                </LinearLayout>
-                            </HorizontalScrollView>
-
-
-                            <com.google.android.material.button.MaterialButton
-                                android:layout_marginVertical="10dp"
-                                android:id="@+id/btnSave"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:paddingVertical="10dp"
-                                android:text="Save Diagram"
-                                app:rippleColor="@color/white"
-                                app:backgroundTint="@color/primary"
-                                android:textColor="@color/white"
-                                android:layout_gravity="end"
-                                android:paddingHorizontal="20dp"
-                                android:background="@drawable/spinner_background"
-                                />
-
-
-
-                        </LinearLayout>
 
                     </LinearLayout>
 
                 </androidx.core.widget.NestedScrollView>
+                <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/containerLogicDiagram"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginBottom="50dp"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Logic Diagram"
+                        android:textSize="16sp"
+                        android:textColor="@color/primary"
+                        android:fontFamily="@font/poppinssemibold"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/logic_diagram_description"
+                        android:textSize="12sp"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/poppinsregular"
+                        />
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        >
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            >
+                            <ImageView
+                                android:id="@+id/myImageView"
+                                android:layout_width="420dp"
+                                android:layout_height="420dp"/>
+                        </LinearLayout>
+                    </HorizontalScrollView>
+
+
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_marginVertical="10dp"
+                        android:id="@+id/btnSave"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingVertical="10dp"
+                        android:text="Save Diagram"
+                        app:rippleColor="@color/white"
+                        app:backgroundTint="@color/primary"
+                        android:textColor="@color/white"
+                        android:layout_gravity="end"
+                        android:paddingHorizontal="20dp"
+                        android:background="@drawable/spinner_background"
+                        />
+
+
+
+                </LinearLayout>
 
             </LinearLayout>
 

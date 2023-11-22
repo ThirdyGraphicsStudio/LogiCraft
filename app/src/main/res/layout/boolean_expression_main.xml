@@ -195,6 +195,7 @@
 
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
+            android:visibility="gone"
             android:id="@+id/btnSingleAtmosphere"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -222,6 +223,7 @@
 
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
+            android:visibility="gone"
             android:id="@+id/btnSlash"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -607,6 +609,7 @@
 
  <!--    Fourth Row-->
     <LinearLayout
+        android:visibility="gone"
         android:layout_marginVertical="3dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -614,6 +617,7 @@
         >
 
         <androidx.cardview.widget.CardView
+            android:visibility="gone"
             android:id="@+id/btnT"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -640,6 +644,7 @@
 
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
+            android:visibility="gone"
             android:id="@+id/btnZero"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -666,6 +671,8 @@
 
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
+            android:visibility="gone"
+
             android:id="@+id/btnOne"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -721,6 +728,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:visibility="gone"
             android:id="@+id/btnMinus"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -788,6 +796,8 @@
 
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
+            android:visibility="gone"
+
             android:id="@+id/btnEqual"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -815,6 +825,7 @@
 
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
+            android:visibility="gone"
             android:id="@+id/btnLessThan"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -841,6 +852,7 @@
 
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
+            android:visibility="gone"
             android:id="@+id/btnGreaterThan"
             android:layout_width="0dp"
             android:layout_weight="1"

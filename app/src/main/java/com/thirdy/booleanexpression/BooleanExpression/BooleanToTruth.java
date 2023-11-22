@@ -73,8 +73,8 @@ public class BooleanToTruth {
 
     // Main Operators
     private Operator not    = new Operator('~', '~', 5, 1);
-    private Operator and    = new Operator('&', '&', 4, 2);
-    private Operator or     = new Operator('|', '|', 3, 2);
+    private Operator and    = new Operator('.', '.', 4, 2);
+    private Operator or     = new Operator('+', '+', 3, 2);
     private Operator cond   = new Operator('>', '>', 2, 2);
     private Operator bicond = new Operator('⊕', '⊕', 1, 2);
 

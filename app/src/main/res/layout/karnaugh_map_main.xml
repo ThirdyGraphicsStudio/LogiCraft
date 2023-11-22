@@ -88,7 +88,16 @@
                 app:strokeColor="@color/primary"
                 app:strokeWidth="1dp" />
 
-
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:fontFamily="@font/poppinsbold"
+                android:text="Click on the cells to choose your input:"
+                android:textColor="@color/black"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginBottom="20dp"
+                />
             <!--            TODO Table-->
             <TableLayout
                 android:id="@+id/tableLayout"

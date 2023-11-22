@@ -487,6 +487,93 @@
                     </LinearLayout>
 
 
+                    <!-- SIMPlify Expression-->
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:id="@+id/container_simplify"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginVertical="20dp"
+                        >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="K-Map"
+                            android:textSize="16sp"
+                            android:textColor="@color/primary"
+                            android:fontFamily="@font/poppinssemibold"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Simplify Expression"
+                            android:textSize="12sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/poppinsregular"
+                            />
+
+
+                        <TextView
+                            android:layout_marginVertical="10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="F = A + B’C"
+                            android:textSize="12sp"
+                            android:visibility="gone"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/poppinsbold"
+                            />
+
+                        <TextView
+                            android:visibility="gone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Answer"
+                            android:textSize="12sp"
+                            android:textColor="@color/primary"
+                            android:fontFamily="@font/poppinsmedium"
+                            />
+
+                        <TextView
+                            android:visibility="gone"
+                            android:layout_marginTop="10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Expression is already simplified"
+                            android:textSize="12sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/poppinsregular"
+                            />
+
+                        <!--            Table-->
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginVertical="10dp"
+                            app:contentPadding="15dp"
+                            app:cardElevation="0dp"
+                            app:cardCornerRadius="10dp"
+                            app:cardBackgroundColor="@color/inputfield"
+                            >
+
+                            <TextView
+                                android:id="@+id/txtSimplifiedExpression"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:textSize="12sp"
+                                android:textColor="@color/primary"
+                                android:fontFamily="@font/poppinsbold"
+                                />
+
+
+                        </androidx.cardview.widget.CardView>
+
+                    </LinearLayout>
+
                 </LinearLayout>
 
             </androidx.core.widget.NestedScrollView>
@@ -494,10 +581,11 @@
 
             <LinearLayout
                 android:id="@+id/containerLogicDiagram"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_marginHorizontal="20dp"
                 android:layout_marginBottom="50dp"
                 >
 

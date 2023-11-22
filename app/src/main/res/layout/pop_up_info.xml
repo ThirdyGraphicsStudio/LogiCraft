@@ -84,7 +84,7 @@
                         android:fontFamily="@font/poppinsregular"
                         android:gravity="center"
                         android:padding="8dp"
-                        android:text="|"
+                        android:text="+"
                         android:textColor="@color/primary" />
                 </TableRow>
 
@@ -108,7 +108,7 @@
                         android:fontFamily="@font/poppinsregular"
                         android:gravity="center"
                         android:padding="8dp"
-                        android:text="&amp;"
+                        android:text="."
                         android:textColor="@color/primary" />
                 </TableRow>
 

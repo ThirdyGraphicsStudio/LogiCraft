@@ -59,6 +59,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -700,7 +701,7 @@ public class FormulaTruthTable extends AppCompatActivity {
            txtSimplified.setVisibility(View.VISIBLE);
            txtSimplified.setText("INTERPRET: \n " + convertToBoolean(expression));
 
-
+           //simple expression
 
 
             String encodedQuery = null;
@@ -710,7 +711,8 @@ public class FormulaTruthTable extends AppCompatActivity {
                 throw new RuntimeException(e);
             }
             //TODO Remove Comment
-            fetchWolframAlphaResult(encodedQuery);
+            finalSimplified(encodedQuery);
+
         }else{
             Log.d("StepLog", "No parentheses found in the input text.");
         }
@@ -940,5 +942,111 @@ public class FormulaTruthTable extends AppCompatActivity {
 
         return result.toString();
     }
+
+
+    private void finalSimplified(String query) {
+        progressBar.setVisibility(View.VISIBLE);
+        String appID = "VLG5Q7-2XL8AYYWQW";
+        String url = "https://api.wolframalpha.com/v2/query?appid=" + appID + "&input=simplifify%20" + query;
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    // Handle error
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(FormulaTruthTable.this, "Can Not Make Logic Diagram", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    String responseData = response.body().string();
+                    // Parse the XML to find the image URL
+                    final String text = extractPlainText(responseData);
+
+                    String encodedQuery = null;
+                    try {
+                        encodedQuery = URLEncoder.encode(text, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
+                    //TODO Remove Comment
+                    fetchWolframAlphaResult(encodedQuery);
+
+
+                    // Update the ImageView on the UI thread
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            LinearLayout container_simplify = findViewById(R.id.container_simplify);
+                            TextView txtSimplifiedExpression = findViewById(R.id.txtSimplifiedExpression);
+                            try{
+                                Log.d("StepLog", text);
+                                progressBar.setVisibility(View.GONE);
+                                container_simplify.setVisibility(View.VISIBLE);
+                                txtSimplifiedExpression.setText("F = " + text );
+
+
+                            }catch (Exception e) {
+                                container_simplify.setVisibility(View.GONE);
+                                e.printStackTrace();
+                                progressBar.setVisibility(View.GONE);
+                                Toast.makeText(FormulaTruthTable.this, "Already Simplified", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            }
+
+            private String extractPlainText(String xmlResponse) {
+                try {
+                    // Create a new DocumentBuilderFactory
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+
+                    // Parse the XML
+                    InputStream is = new ByteArrayInputStream(xmlResponse.getBytes());
+                    Document doc = builder.parse(is);
+
+                    // Find the 'Result' pod
+                    NodeList podNodes = doc.getElementsByTagName("pod");
+                    for (int i = 0; i < podNodes.getLength(); i++) {
+                        Node podNode = podNodes.item(i);
+                        if (podNode.getNodeType() == Node.ELEMENT_NODE) {
+                            Element podElement = (Element) podNode;
+                            if ("Result".equals(podElement.getAttribute("title"))) {
+                                NodeList plaintextTags = podElement.getElementsByTagName("plaintext");
+                                if (plaintextTags.getLength() > 0) {
+                                    Node plaintextNode = plaintextTags.item(0);
+                                    if (plaintextNode != null) {
+                                        return plaintextNode.getTextContent();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return ""; // Return empty if not found or in case of exception
+            }
+
+
+
+        });
+    }
+
+
+
+
 }
 
