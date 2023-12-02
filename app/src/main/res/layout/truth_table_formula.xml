@@ -353,10 +353,9 @@
 
                         <!-- SIMPlify Expression-->
                         <LinearLayout
-                            android:visibility="gone"
                             android:id="@+id/container_simplify"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="1000dp"
                             android:orientation="vertical"
                             android:layout_marginVertical="20dp"
                             >
@@ -412,8 +411,15 @@
                                 android:fontFamily="@font/poppinsregular"
                                 />
 
+                            <WebView
+                                android:layout_width="match_parent"
+                                android:layout_height="1000dp"
+                                android:id="@+id/webview"
+                                />
+
                             <!--            Table-->
                             <androidx.cardview.widget.CardView
+                                android:visibility="gone"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginVertical="10dp"

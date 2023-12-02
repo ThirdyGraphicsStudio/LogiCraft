@@ -25,6 +25,9 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -700,6 +703,7 @@ public class FormulaTruthTable extends AppCompatActivity {
            TextView txtSimplified = findViewById(R.id.txtSimplified);
            txtSimplified.setVisibility(View.VISIBLE);
            txtSimplified.setText("INTERPRET: \n " + convertToBoolean(expression));
+            simplified(convertToBoolean(expression));
 
            //simple expression
 
@@ -718,6 +722,26 @@ public class FormulaTruthTable extends AppCompatActivity {
         }
 
         }
+
+    private void simplified(String encodedQuery) {
+        WebView myWebView = (WebView) findViewById(R.id.webview);
+        WebSettings webSettings = myWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        myWebView.loadUrl("https://www.emathhelp.net/en/calculators/discrete-mathematics/boolean-algebra-calculator/?f=" + encodedQuery);
+
+        myWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                // JavaScript code to remove unwanted elements
+                view.evaluateJavascript("javascript:(function() { " +
+                        "document.body.innerHTML = document.getElementById('solution').outerHTML; " +
+                        "})()", null);
+            }
+        });
+
+    }
 
 
     private void fetchWolframAlphaResult(String query) {
