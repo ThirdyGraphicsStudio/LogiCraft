@@ -855,8 +855,6 @@ public class FormulaTruthTable extends AppCompatActivity {
     }
 
 
-
-
     private String convertToBoolean(String expression) {
         // Split the input expression by '+' to get individual terms
         String[] terms = expression.split("\\s*\\+\\s*");
@@ -895,53 +893,6 @@ public class FormulaTruthTable extends AppCompatActivity {
         return outputExpression.toString();
     }
 
-    public static String transformExpression(String input) {
-        // Define a regular expression pattern for (Variable1Variable2...) AND (Variable1Variable2...)
-        String pattern = "\\((\\w+)\\) AND \\((\\w+)\\)";
-
-        // Create a pattern matcher
-        Pattern regex = Pattern.compile(pattern);
-        Matcher matcher = regex.matcher(input);
-
-        // Initialize the result
-        StringBuilder result = new StringBuilder();
-
-        int previousEnd = 0;
-
-        // Find and replace matching patterns
-        while (matcher.find()) {
-            // Append the part of the input before the match
-            result.append(input.substring(previousEnd, matcher.start()));
-
-            // Extract variables
-            String variables1 = matcher.group(1);
-            String variables2 = matcher.group(2);
-
-            // Split the variables into individual characters
-            String[] vars1 = variables1.split("(?!^)");
-            String[] vars2 = variables2.split("(?!^)");
-
-            // Build the replacement string
-            StringBuilder replacement = new StringBuilder();
-            for (int i = 0; i < vars1.length; i++) {
-                if (i > 0) {
-                    replacement.append(" OR ");
-                }
-                replacement.append(vars1[i]).append(" OR ~").append(vars2[i]);
-            }
-
-            // Append the replacement string
-            result.append("(").append(replacement).append(")");
-
-            // Update the previous end index
-            previousEnd = matcher.end();
-        }
-
-        // Append the remaining part of the input
-        result.append(input.substring(previousEnd));
-
-        return result.toString();
-    }
 
 
     private void finalSimplified(String query) {
@@ -1045,6 +996,53 @@ public class FormulaTruthTable extends AppCompatActivity {
         });
     }
 
+    public static String transformExpression(String input) {
+        // Define a regular expression pattern for (Variable1Variable2...) AND (Variable1Variable2...)
+        String pattern = "\\((\\w+)\\) AND \\((\\w+)\\)";
+
+        // Create a pattern matcher
+        Pattern regex = Pattern.compile(pattern);
+        Matcher matcher = regex.matcher(input);
+
+        // Initialize the result
+        StringBuilder result = new StringBuilder();
+
+        int previousEnd = 0;
+
+        // Find and replace matching patterns
+        while (matcher.find()) {
+            // Append the part of the input before the match
+            result.append(input.substring(previousEnd, matcher.start()));
+
+            // Extract variables
+            String variables1 = matcher.group(1);
+            String variables2 = matcher.group(2);
+
+            // Split the variables into individual characters
+            String[] vars1 = variables1.split("(?!^)");
+            String[] vars2 = variables2.split("(?!^)");
+
+            // Build the replacement string
+            StringBuilder replacement = new StringBuilder();
+            for (int i = 0; i < vars1.length; i++) {
+                if (i > 0) {
+                    replacement.append(" OR ");
+                }
+                replacement.append(vars1[i]).append(" OR ~").append(vars2[i]);
+            }
+
+            // Append the replacement string
+            result.append("(").append(replacement).append(")");
+
+            // Update the previous end index
+            previousEnd = matcher.end();
+        }
+
+        // Append the remaining part of the input
+        result.append(input.substring(previousEnd));
+
+        return result.toString();
+    }
 
 
 

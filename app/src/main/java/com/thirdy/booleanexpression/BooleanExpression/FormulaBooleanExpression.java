@@ -8,16 +8,19 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -33,12 +36,34 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.button.MaterialButton;
+import com.squareup.picasso.Picasso;
 import com.thirdy.booleanexpression.R;
 import com.thirdy.booleanexpression.TruthTable.FormulaTruthTable;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class FormulaBooleanExpression extends AppCompatActivity {
     private NestedScrollView nestedScrollView;
@@ -50,6 +75,11 @@ public class FormulaBooleanExpression extends AppCompatActivity {
     Bitmap bitmap;
     private ImageView imgPdf;
     private ProgressBar progressBar;
+
+    private int[] fColumnValues;
+
+    private String[] minters;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,10 +96,7 @@ public class FormulaBooleanExpression extends AppCompatActivity {
 
         //generate table
         generateTruthTable();
-        generateKmapTable();
-        generateKmapGroupTable();
-        dropdownForGroup();
-        dropdownForExport();
+
 
         //BACK
         findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
@@ -79,7 +106,304 @@ public class FormulaBooleanExpression extends AppCompatActivity {
             }
         });
 
+
+//        generate LOGIC DIAGRAM
+        Intent intent = getIntent();
+        String input = intent.getStringExtra("input");
+        generateLogicDiagram(input);
+
+
     }
+
+    private void generateLogicDiagram(String expression) {
+        String encodedQuery = null;
+        try {
+            encodedQuery = URLEncoder.encode(convertToBoolean(expression), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        //TODO Remove Comment
+        finalSimplified(encodedQuery);
+    }
+
+
+
+    private void fetchWolframAlphaResult(String query) {
+        progressBar.setVisibility(View.VISIBLE);
+        String appID = "LUQHKE-P74YUH66QT";
+        String url = "https://api.wolframalpha.com/v2/query?appid=" + appID + "&input=logic+circuit+" + query + "&format=image";
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    // Handle error
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(FormulaBooleanExpression.this, "Can Not Make Logic Diagram", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    String responseData = response.body().string();
+                    // Parse the XML to find the image URL
+                    String imageUrl = extractImageUrl(responseData);
+                    // Update the ImageView on the UI thread
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            LinearLayout containerLogicDiagram = findViewById(R.id.containerLogicDiagram);
+                            MaterialButton btnSave = findViewById(R.id.btnSave);
+                            try{
+                                Log.d("StepLog", imageUrl);
+
+                                progressBar.setVisibility(View.GONE);
+                                ImageView imageView = findViewById(R.id.myImageView);
+                                Picasso.get().load(imageUrl).into(imageView);
+                                containerLogicDiagram.setVisibility(View.VISIBLE);
+
+                                btnSave.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                                        File file = savedDiagram(bitmap);
+                                        saveToGallery(file);
+                                    }
+                                });
+
+                            }catch (Exception e) {
+                                containerLogicDiagram.setVisibility(View.GONE);
+                                e.printStackTrace();
+                                progressBar.setVisibility(View.GONE);
+                                Toast.makeText(FormulaBooleanExpression.this, "Can Not Make Logic Diagram", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            }
+
+            private String extractImageUrl(String xmlResponse) {
+                try {
+                    // Create a new DocumentBuilderFactory
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+
+                    // Parse the XML
+                    InputStream is = new ByteArrayInputStream(xmlResponse.getBytes());
+                    Document doc = builder.parse(is);
+                    NodeList imgTags = doc.getElementsByTagName("img");
+
+                    // Loop through <img> tags to find the desired image
+                    for (int i = 0; i < imgTags.getLength(); i++) {
+                        Node node = imgTags.item(i);
+                        if (node.getNodeType() == Node.ELEMENT_NODE) {
+                            Element element = (Element) node;
+                            // Check if this is the image you want (based on alt/title/other attributes)
+                            if (element.getAttribute("alt").contains("Logic circuit")) {
+                                return element.getAttribute("src").replace("&amp;", "&");
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null; // Or a default image URL
+            }
+
+
+        });
+    }
+
+    private File  savedDiagram(Bitmap bitmap) {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(FormulaBooleanExpression.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CODE);
+        }
+        File filepath = Environment.getExternalStorageDirectory();
+        File dir = new File(filepath.getAbsolutePath() + "/Download/");
+        dir.mkdirs();
+        String fileName = System.currentTimeMillis() + ".jpg";
+        File file = new File(dir, fileName);
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            outputStream.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return file;
+
+    }
+
+    private void saveToGallery(File file) {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        values.put(MediaStore.MediaColumns.DATA, file.getAbsolutePath());
+
+        getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        Toast.makeText(this, "Saved Logic Diagram Successfully! ", Toast.LENGTH_SHORT).show();
+    }
+
+
+    private String convertToBoolean(String expression) {
+        // Split the input expression by '+' to get individual terms
+        String[] terms = expression.split("\\s*\\+\\s*");
+
+        StringBuilder outputExpression = new StringBuilder();
+
+        for (int i = 0; i < terms.length; i++) {
+            String term = terms[i];
+            StringBuilder convertedTerm = new StringBuilder();
+
+            boolean previousWasNegatedVariable = false;
+
+            for (int j = 0; j < term.length(); j++) {
+                char character = term.charAt(j);
+
+                if (character == '\'') {
+                    // If it's a prime (negation), prepend '~' to the last character in convertedTerm
+                    convertedTerm.insert(convertedTerm.length() - 1, '~');
+                    previousWasNegatedVariable = true; // Marking that the last variable was negated
+                } else {
+                    // Check if the current and previous characters are letters or if previous was a negated variable
+                    if (j > 0 && (Character.isLetter(character) || previousWasNegatedVariable)) {
+                        // If it's a letter or previous was a negated variable, insert "OR"
+                        convertedTerm.append(" OR ");
+                    }
+                    convertedTerm.append(character);
+                    previousWasNegatedVariable = false; // Resetting the flag
+                }
+            }
+            // Add the converted term to the output expression
+            if (i > 0) {
+                outputExpression.append(" AND ");
+            }
+            outputExpression.append('(').append(convertedTerm).append(')');
+        }
+        return outputExpression.toString();
+    }
+
+
+
+    private void finalSimplified(String query) {
+        progressBar.setVisibility(View.VISIBLE);
+        String appID = "VLG5Q7-2XL8AYYWQW";
+        String url = "https://api.wolframalpha.com/v2/query?appid=" + appID + "&input=simplifify%20" + query;
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    // Handle error
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(FormulaBooleanExpression.this, "Can Not Make Logic Diagram", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    String responseData = response.body().string();
+                    // Parse the XML to find the image URL
+                    final String text = extractPlainText(responseData);
+
+                    String encodedQuery = null;
+                    try {
+                        encodedQuery = URLEncoder.encode(text, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
+                    //TODO Remove Comment
+                    fetchWolframAlphaResult(encodedQuery);
+
+
+                    // Update the ImageView on the UI thread
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //LinearLayout container_simplify = findViewById(R.id.container_simplify);
+                            //TextView txtSimplifiedExpression = findViewById(R.id.txtSimplifiedExpression);
+                            try{
+                                Log.d("StepLog", text);
+                                progressBar.setVisibility(View.GONE);
+                               // container_simplify.setVisibility(View.VISIBLE);
+                               // txtSimplifiedExpression.setText("F = " + text );
+
+
+                            }catch (Exception e) {
+                               // container_simplify.setVisibility(View.GONE);
+                                e.printStackTrace();
+                                progressBar.setVisibility(View.GONE);
+                                Toast.makeText(FormulaBooleanExpression.this, "Already Simplified", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            }
+
+            private String extractPlainText(String xmlResponse) {
+                try {
+                    // Create a new DocumentBuilderFactory
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+
+                    // Parse the XML
+                    InputStream is = new ByteArrayInputStream(xmlResponse.getBytes());
+                    Document doc = builder.parse(is);
+
+                    // Find the 'Result' pod
+                    NodeList podNodes = doc.getElementsByTagName("pod");
+                    for (int i = 0; i < podNodes.getLength(); i++) {
+                        Node podNode = podNodes.item(i);
+                        if (podNode.getNodeType() == Node.ELEMENT_NODE) {
+                            Element podElement = (Element) podNode;
+                            if ("Result".equals(podElement.getAttribute("title"))) {
+                                NodeList plaintextTags = podElement.getElementsByTagName("plaintext");
+                                if (plaintextTags.getLength() > 0) {
+                                    Node plaintextNode = plaintextTags.item(0);
+                                    if (plaintextNode != null) {
+                                        return plaintextNode.getTextContent();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return ""; // Return empty if not found or in case of exception
+            }
+
+
+
+        });
+    }
+
 
     private void savedPdf() {
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -196,7 +520,7 @@ public class FormulaBooleanExpression extends AppCompatActivity {
         String input = intent.getStringExtra("input");
 
         // Get data from print method
-        BooleanToTruth table = new BooleanToTruth(input, true);
+        BooleanToTruth table = new BooleanToTruth(input, false);
         List<List<String>> tableData = table.printTable(); // Get data from print method
 
         TableLayout tableLayout = findViewById(R.id.tableLayout);
@@ -224,12 +548,92 @@ public class FormulaBooleanExpression extends AppCompatActivity {
 
             tableLayout.addView(row);
         }
+
+
+        ArrayList<String> mintermIndexes = new ArrayList<>();
+        int childCount = tableLayout.getChildCount();
+
+        // Iterate through each TableRow
+        for (int i = 1; i < childCount; i++) { // Start from 1 to skip the header row
+            TableRow row = (TableRow) tableLayout.getChildAt(i);
+            int lastCellIndex = row.getChildCount() - 1;
+            TextView lastTextView = (TextView) row.getChildAt(lastCellIndex);
+
+            mintermIndexes.add(lastTextView.getText().toString()); // Subtract 1 to adjust for header row
+            Log.d("TAG", i + String.valueOf(mintermIndexes));
+        }
+
+
+
+        minters = new String[mintermIndexes.size()];
+        // Convert and transfer values
+        for (int i = 0; i < mintermIndexes.size(); i++) {
+            minters[i] = String.valueOf(mintermIndexes.get(i));
+            Log.d("TAG", String.valueOf(minters[i]));
+        }
+
+
+        int variableCount = 0;
+        int columnCount = mintermIndexes.size();
+        if (columnCount == 4) {
+            variableCount = 2;
+        } else if (columnCount == 8) {
+            variableCount = 3;
+        } else if (columnCount == 16) {
+            variableCount = 4;
+        } else if (columnCount == 32) {
+            variableCount = 5;
+        } else if (columnCount == 64) {
+            variableCount = 6;
+        }
+
+
+
+        generateKmapTable( variableCount, "1");
+
+        Log.d("TAG", String.valueOf(columnCount));
+        Log.d("TAG", String.valueOf(variableCount));
+        Log.d("TAG", String.valueOf(mintermIndexes));
     }
-    private void generateKmapTable() {
-        TableLayout tableLayout = findViewById(R.id.kmapTableLayout);
+
+
+
+
+    private void generateKmapTable(int variableCount, String group) {
+        if (variableCount == 2) {
+            String[] headers = {"  ", "", ""};
+            String[][] data = {{"  ", minters[0], minters[1]}, {"  ", minters[2], minters[3]}};
+            createTable(headers, data, R.id.kmapTableLayout);
+            createGroupTable(headers, data, R.id.groupTableLayout, group);
+        } else if (variableCount == 3) {
+            String[] headers = {"  ", "", "", "", ""};
+            String[][] data = {{"  ", minters[0], minters[1], minters[3], minters[2]}, {"  ", minters[4], minters[5], minters[7], minters[6]}};
+            createTable(headers, data, R.id.kmapTableLayout);
+            createGroupTable(headers, data, R.id.groupTableLayout, group);
+        }else if (variableCount == 4) {
+            String[] headers = {"  ", "", "", "", ""};
+            String[][] data = {{"  ", minters[0], minters[1], minters[3], minters[2]}, {"  ", minters[4], minters[5], minters[7], minters[6]}, {"  ", minters[12], minters[13], minters[15], minters[14]}, {"  ", minters[8], minters[9], minters[11], minters[10]}};
+            createTable(headers, data, R.id.kmapTableLayout);
+            createGroupTable(headers, data, R.id.groupTableLayout, group);
+        } else if (variableCount == 5) {
+            String[] headers = {"  ", "", "", " ", ""};
+            String[][]data = {{"  ", minters[0], minters[1], minters[3], minters[2]}, {"  ", minters[4], minters[5], minters[7], minters[6]}, {"  ", minters[12], minters[13], minters[15], minters[14]}, {"  '", minters[8], minters[9], minters[11], minters[10]}, {"  ", minters[16], minters[17], minters[19], minters[18]}, {"  ", minters[20], minters[21], minters[23], minters[22]}, {"  ", minters[28], minters[29], minters[31], minters[30]}, {"  ", minters[24], minters[25], minters[27], minters[26]}};
+            createTable(headers, data, R.id.kmapTableLayout);
+            createGroupTable(headers, data, R.id.groupTableLayout, group);
+        } else if (variableCount == 6) {
+            String[] headers = {"  ", "", " ", "", " "};
+            String[][] data = {{"  ", minters[0], minters[1], minters[3], minters[2]}, {"  ", minters[4], minters[5], minters[7], minters[6]}, {"  ", minters[12], minters[13], minters[15], minters[14]}, {"  ", minters[8], minters[9], minters[11], minters[10]}, {" ", minters[16], minters[17], minters[19], minters[18]}, {"  ", minters[20], minters[21], minters[23], minters[22]}, {"  ", minters[28], minters[29], minters[31], minters[30]}, {"  ", minters[24], minters[25], minters[27], minters[26]}, {"  ", minters[32], minters[33], minters[35], minters[34]}, {"  ", minters[36], minters[37], minters[39], minters[38]}, {"  ", minters[44], minters[45], minters[47], minters[46]}, {"  ", minters[40], minters[41], minters[43], minters[42]}, {"  ", minters[48], minters[49], minters[51], minters[50]}, {"  ", minters[52], minters[53], minters[55], minters[54]}, {"  ", minters[60], minters[61], minters[63], minters[62]}, {"  ", minters[56], minters[57], minters[59], minters[58]}};
+            createTable(headers, data, R.id.kmapTableLayout);
+            createGroupTable(headers, data, R.id.groupTableLayout, group);
+        }
+    }
+
+
+    private void createTable(String[] headers, String[][] data, int tableLayoutId) {
+        TableLayout tableLayout = findViewById(tableLayoutId);
+        tableLayout.removeAllViews();
 
         // Define the header titles
-        String[] headers = {"  ", "B'C'", "B'C", "BC", "BC'"};
 
         // Create a row for the header
         TableRow headerRow = new TableRow(this);
@@ -246,11 +650,6 @@ public class FormulaBooleanExpression extends AppCompatActivity {
         // Add the header row to the table layout without border
         tableLayout.addView(headerRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
 
-        // Data for the table cells
-        String[][] data = {
-                {"A'", "1", "0", "0", "0"},
-                {"A", "1", "1", "1", "1"}
-        };
 
         // Add data rows
         for (int i = 0; i < data.length; i++) {
@@ -277,12 +676,11 @@ public class FormulaBooleanExpression extends AppCompatActivity {
         }
 
     }
-    private void generateKmapGroupTable() {
-        TableLayout tableLayout = findViewById(R.id.groupTableLayout);
+    private void createGroupTable(String[] headers, String[][] data, int tableLayoutId, String group) {
+        TableLayout tableLayout = findViewById(tableLayoutId);
 
-        // Define the header titles
-        String[] headers = {"  ", "B'C'", "B'C", "BC", "BC'"};
 
+        tableLayout.removeAllViews();
         // Create a row for the header
         TableRow headerRow = new TableRow(this);
         for (String header : headers) {
@@ -297,30 +695,22 @@ public class FormulaBooleanExpression extends AppCompatActivity {
 
         // Add the header row to the table layout without border
         tableLayout.addView(headerRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-
-        // Data for the table cells
-        String[][] data = {
-                {"A'", "1", "0", "0", "0"},
-                {"A", "1", "1", "1", "1"}
-        };
-
         // Add data rows
-        // Loop through each row
         for (int i = 0; i < data.length; i++) {
             TableRow tr = new TableRow(this);
-            // Loop through each column
             for (int j = 0; j < data[i].length; j++) {
                 TextView tv = new TextView(this);
                 tv.setText(String.valueOf(data[i][j]));
                 tv.setGravity(Gravity.CENTER);
                 tv.setPadding(10, 10, 10, 10);
-
+                tv.setTextColor(getResources().getColor(R.color.primary));
+                // Remove border effect by setting the background to a transparent drawable for the first column
                 // Check the value and set background color accordingly
-                if (data[i][j].equals("1")) {
+                if (data[i][j].equals(group)) {
                     // Set background to primary color
                     tv.setBackgroundColor(getResources().getColor(R.color.primary));
                     tv.setTextColor(getResources().getColor(R.color.white)); // Assuming you want white text on primary background
-                } else if (data[i][j].equals("0")) {
+                } else  {
                     // Set background to white
                     tv.setBackgroundColor(getResources().getColor(android.R.color.white));
                     tv.setTextColor(getResources().getColor(R.color.black)); // Assuming you want black text on white background
@@ -338,94 +728,11 @@ public class FormulaBooleanExpression extends AppCompatActivity {
             // Add the TableRow to the TableLayout
             tableLayout.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
         }
-
-    }
-    private void dropdownForGroup() {
-        Spinner spinner = findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this,
-                R.layout.custom_spinner_item, getResources().getStringArray(R.array.dropdown_items)) {
-            @NonNull
-            @Override
-            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                TextView textView = (TextView) view; // Now we cast directly to TextView
-                // Set your custom font here using Typeface if needed
-                // Typeface typeface = ResourcesCompat.getFont(getContext(), R.font.your_custom_font);
-                // textView.setTypeface(typeface);
-                return view;
-            }
-
-            @Override
-            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                View view = super.getDropDownView(position, convertView, parent);
-                TextView textView = view.findViewById(R.id.textView);
-                // Set your custom font here using Typeface if needed
-                // Typeface typeface = ResourcesCompat.getFont(getContext(), R.font.your_custom_font);
-                // textView.setTypeface(typeface);
-                return view;
-            }
-        };
-
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Get selected item
-                String selectedItem = parent.getItemAtPosition(position).toString();
-                // Do something with the selected item
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
     }
 
-    private void dropdownForExport() {
-        Spinner spinner = findViewById(R.id.spinner_export);
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this,
-                R.layout.custom_export_spinner_item, getResources().getStringArray(R.array.dropdown_items_export)) {
-            @NonNull
-            @Override
-            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                TextView textView = (TextView) view; // Now we cast directly to TextView
-                // Set your custom font here using Typeface if needed
-                // Typeface typeface = ResourcesCompat.getFont(getContext(), R.font.your_custom_font);
-                // textView.setTypeface(typeface);
-                return view;
-            }
-
-            @Override
-            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                View view = super.getDropDownView(position, convertView, parent);
-                TextView textView = view.findViewById(R.id.textView);
-                // Set your custom font here using Typeface if needed
-                // Typeface typeface = ResourcesCompat.getFont(getContext(), R.font.your_custom_font);
-                // textView.setTypeface(typeface);
-                return view;
-            }
-        };
 
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Get selected item
-                String selectedItem = parent.getItemAtPosition(position).toString();
-                // Do something with the selected item
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-    }
 
 }
