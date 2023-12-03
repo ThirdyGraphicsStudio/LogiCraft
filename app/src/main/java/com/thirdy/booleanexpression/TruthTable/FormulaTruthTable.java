@@ -689,17 +689,6 @@ public class FormulaTruthTable extends AppCompatActivity {
 
 
 
-//            <TextView
-//            android:id="@+id/txtSimplified"
-//            android:layout_width="wrap_content"
-//            android:layout_height="wrap_content"
-//            android:text="Simplified Expression: "
-//            android:layout_marginTop="10dp"
-//            android:textSize="12sp"
-//            android:textColor="@color/black"
-//            android:fontFamily="@font/poppinsregular"
-//                    />
-
            TextView txtSimplified = findViewById(R.id.txtSimplified);
            txtSimplified.setVisibility(View.VISIBLE);
            txtSimplified.setText("INTERPRET: \n " + convertToBoolean(expression));
@@ -902,7 +891,7 @@ public class FormulaTruthTable extends AppCompatActivity {
                     // Check if the current and previous characters are letters or if previous was a negated variable
                     if (j > 0 && (Character.isLetter(character) || previousWasNegatedVariable)) {
                         // If it's a letter or previous was a negated variable, insert "OR"
-                        convertedTerm.append(" OR ");
+                        convertedTerm.append(" AND ");
                     }
                     convertedTerm.append(character);
                     previousWasNegatedVariable = false; // Resetting the flag
@@ -910,7 +899,7 @@ public class FormulaTruthTable extends AppCompatActivity {
             }
             // Add the converted term to the output expression
             if (i > 0) {
-                outputExpression.append(" AND ");
+                outputExpression.append(" OR ");
             }
             outputExpression.append('(').append(convertedTerm).append(')');
         }

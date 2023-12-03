@@ -25,6 +25,9 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -110,10 +113,34 @@ public class FormulaBooleanExpression extends AppCompatActivity {
 //        generate LOGIC DIAGRAM
         Intent intent = getIntent();
         String input = intent.getStringExtra("input");
-        generateLogicDiagram(input);
 
+        simplified(input);
+
+        //generateLogicDiagram(input);
 
     }
+
+
+    private void simplified(String encodedQuery) {
+        WebView myWebView = (WebView) findViewById(R.id.webview);
+        WebSettings webSettings = myWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        myWebView.loadUrl("https://www.emathhelp.net/en/calculators/discrete-mathematics/boolean-algebra-calculator/?f=" + encodedQuery);
+
+        myWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                // JavaScript code to remove unwanted elements
+                view.evaluateJavascript("javascript:(function() { " +
+                        "document.body.innerHTML = document.getElementById('solution').outerHTML; " +
+                        "})()", null);
+            }
+        });
+
+    }
+
 
     private void generateLogicDiagram(String expression) {
         String encodedQuery = null;
@@ -300,7 +327,6 @@ public class FormulaBooleanExpression extends AppCompatActivity {
         }
         return outputExpression.toString();
     }
-
 
 
     private void finalSimplified(String query) {

@@ -1098,7 +1098,7 @@ public class FormulaKarnaughMap extends AppCompatActivity {
                     // Check if the current and previous characters are letters or if previous was a negated variable
                     if (j > 0 && (Character.isLetter(character) || previousWasNegatedVariable)) {
                         // If it's a letter or previous was a negated variable, insert "OR"
-                        convertedTerm.append(" OR ");
+                        convertedTerm.append(" AND ");
                     }
                     convertedTerm.append(character);
                     previousWasNegatedVariable = false; // Resetting the flag
@@ -1106,7 +1106,7 @@ public class FormulaKarnaughMap extends AppCompatActivity {
             }
             // Add the converted term to the output expression
             if (i > 0) {
-                outputExpression.append(" AND ");
+                outputExpression.append(" OR ");
             }
             outputExpression.append('(').append(convertedTerm).append(')');
         }
