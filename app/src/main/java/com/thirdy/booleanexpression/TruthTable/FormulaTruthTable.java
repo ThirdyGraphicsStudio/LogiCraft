@@ -658,7 +658,9 @@ public class FormulaTruthTable extends AppCompatActivity {
         Log.d("StepLog", builder.toString());
 
         txtSolution.setText(builder.toString());
-            txtAnswer.setText(s.printResults());
+
+//        TODO expressuib
+//            txtAnswer.setText(s.printResults());
 
         // Split the input text by '\n' to separate lines
         String[] lines = s.printResults().split("\n");
@@ -668,7 +670,7 @@ public class FormulaTruthTable extends AppCompatActivity {
 
         // Remove leading and trailing spaces
         String expression = lastLine.trim();
-
+        txtAnswer.setText(expression);
 
         //remove f
         // Find the opening and closing parentheses
@@ -692,7 +694,7 @@ public class FormulaTruthTable extends AppCompatActivity {
            TextView txtSimplified = findViewById(R.id.txtSimplified);
            txtSimplified.setVisibility(View.VISIBLE);
            txtSimplified.setText("INTERPRET: \n " + convertToBoolean(expression));
-            simplified(convertToBoolean(expression));
+            simplified(expression);
 
            //simple expression
 

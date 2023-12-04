@@ -888,7 +888,7 @@ public class FormulaKarnaughMap extends AppCompatActivity {
         Log.d("StepLog", builder.toString());
 
         txtSolution.setText(builder.toString());
-        txtAnswer.setText(s.printResults());
+//        txtAnswer.setText(s.printResults());
 
         // Split the input text by '\n' to separate lines
         String[] lines = s.printResults().split("\n");
@@ -898,6 +898,9 @@ public class FormulaKarnaughMap extends AppCompatActivity {
 
         // Remove leading and trailing spaces
         String expression = lastLine.trim();
+
+        txtAnswer.setText(expression);
+
 //simple expression
 
         //remove f
@@ -934,7 +937,7 @@ public class FormulaKarnaughMap extends AppCompatActivity {
             txtSimplified.setVisibility(View.VISIBLE);
             txtSimplified.setText("INTERPRET: \n" + convertToBoolean(expression));
 
-            simplified(convertToBoolean(expression));
+            simplified(expression);
 
 
 
