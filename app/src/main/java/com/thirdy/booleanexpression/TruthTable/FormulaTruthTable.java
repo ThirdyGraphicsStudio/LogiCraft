@@ -694,7 +694,15 @@ public class FormulaTruthTable extends AppCompatActivity {
            TextView txtSimplified = findViewById(R.id.txtSimplified);
            txtSimplified.setVisibility(View.VISIBLE);
            txtSimplified.setText("INTERPRET: \n " + convertToBoolean(expression));
-            simplified(expression);
+
+
+           String encodedQuery1 = null;
+            try {
+                encodedQuery1 = URLEncoder.encode(expression, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            simplified(encodedQuery1);
 
            //simple expression
 
@@ -728,6 +736,11 @@ public class FormulaTruthTable extends AppCompatActivity {
                 // JavaScript code to remove unwanted elements
                 view.evaluateJavascript("javascript:(function() { " +
                         "document.body.innerHTML = document.getElementById('solution').outerHTML; " +
+                        "})()", null);
+
+                view.evaluateJavascript("javascript:(function() { " +
+                        "var element = document.getElementById('calculator-input'); " +
+                        "if (element) element.parentNode.removeChild(element); " +
                         "})()", null);
             }
         });

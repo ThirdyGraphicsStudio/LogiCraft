@@ -937,7 +937,14 @@ public class FormulaKarnaughMap extends AppCompatActivity {
             txtSimplified.setVisibility(View.VISIBLE);
             txtSimplified.setText("INTERPRET: \n" + convertToBoolean(expression));
 
-            simplified(expression);
+
+            String encodedQuery1 = null;
+            try {
+                encodedQuery1 = URLEncoder.encode(expression, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            simplified(encodedQuery1);
 
 
 
@@ -975,8 +982,15 @@ public class FormulaKarnaughMap extends AppCompatActivity {
                 view.evaluateJavascript("javascript:(function() { " +
                         "document.body.innerHTML = document.getElementById('solution').outerHTML; " +
                         "})()", null);
+
+                view.evaluateJavascript("javascript:(function() { " +
+                        "var element = document.getElementById('calculator-input'); " +
+                        "if (element) element.parentNode.removeChild(element); " +
+                        "})()", null);
             }
         });
+
+        Log.d("StepLog", "https://www.emathhelp.net/en/calculators/discrete-mathematics/boolean-algebra-calculator/?f=" + encodedQuery);
 
     }
 
