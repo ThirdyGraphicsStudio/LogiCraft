@@ -2,6 +2,7 @@ package com.thirdy.booleanexpression.TruthTable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -18,6 +19,8 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.pdf.PdfDocument;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -25,6 +28,9 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebMessage;
+import android.webkit.WebMessagePort;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -714,7 +720,8 @@ public class FormulaTruthTable extends AppCompatActivity {
                 throw new RuntimeException(e);
             }
             //TODO Remove Comment
-            finalSimplified(encodedQuery);
+            //finalSimplified(encodedQuery);
+            fetchWolframAlphaResult(encodedQuery);
 
         }else{
             Log.d("StepLog", "No parentheses found in the input text.");
@@ -723,27 +730,108 @@ public class FormulaTruthTable extends AppCompatActivity {
         }
 
     private void simplified(String encodedQuery) {
-        WebView myWebView = (WebView) findViewById(R.id.webview);
+        LinearLayout container_simplify = findViewById(R.id.container_simplify);
+        final WebView myWebView = (WebView) findViewById(R.id.webview);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
-        myWebView.loadUrl("https://www.emathhelp.net/en/calculators/discrete-mathematics/boolean-algebra-calculator/?f=" + encodedQuery);
+        // Initially set the WebView to invisible
+        myWebView.setVisibility(View.GONE);
+
+        // Define the JavaScript interface
+        class WebAppInterface {
+            @JavascriptInterface
+            public void processHTML(final String html) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Create a new WebView to display the processed HTML
+                        WebView solutionWebView = new WebView(getApplicationContext());
+                        solutionWebView.setLayoutParams(new LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                        // Enable JavaScript on the WebView
+                        WebSettings settings = solutionWebView.getSettings();
+                        settings.setJavaScriptEnabled(true);
+
+
+                        // Set up a WebViewClient to inject JavaScript when the page loads
+                        solutionWebView.setWebViewClient(new WebViewClient() {
+                            @Override
+                            public void onPageFinished(WebView view, String url) {
+                                // This is called when the page has finished loading
+                                super.onPageFinished(view, url);
+                                // Inject JavaScript to remove the 'calculator-input' element
+                                view.evaluateJavascript("javascript:(function() { " +
+                                        "var element = document.getElementById('calculator-input');" +
+                                        "if (element) {" +
+                                        "   element.parentNode.removeChild(element);" +
+                                        "} " +
+                                        "})()", null);
+
+                                view.evaluateJavascript("javascript:(function() { " +
+                                        "var elements = document.getElementsByClassName('katex-html');" +
+                                        "while (elements.length > 0) {" +
+                                        "   var elementToRemove = elements[0];" +
+                                        "   elementToRemove.parentNode.removeChild(elementToRemove);" +
+                                        "}" +
+                                        "})()", null);
+
+                            }
+                        });
+
+                        solutionWebView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
+
+                        container_simplify.addView(solutionWebView);
+
+                        // Now that the content is ready, make the container visible
+                        container_simplify.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+        }
+
+        // Add the JavaScript interface to the WebView
+        myWebView.addJavascriptInterface(new WebAppInterface(), "AndroidBridge");
 
         myWebView.setWebViewClient(new WebViewClient() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                // JavaScript code to remove unwanted elements
+
                 view.evaluateJavascript("javascript:(function() { " +
-                        "document.body.innerHTML = document.getElementById('solution').outerHTML; " +
+                        "console.log('onPageFinished called');" +
+                        "var solution = document.getElementById('solution');" +
+                        "if (solution) {" +
+                        "   console.log('Solution element found');" +
+                        "   AndroidBridge.processHTML(solution.outerHTML);" +
+                        "} else {" +
+                        "   console.log('Solution element not found');" +
+                        "}" +
+                        "var element = document.getElementById('calculator-input');" +
+                        "if (element) {" +
+                        "   element.parentNode.removeChild(element);" +
+                        "   console.log('Calculator input removed');" +
+                        "} else {" +
+                        "   console.log('Calculator input not found');" +
+                        "}" +
                         "})()", null);
 
                 view.evaluateJavascript("javascript:(function() { " +
                         "var element = document.getElementById('calculator-input'); " +
                         "if (element) element.parentNode.removeChild(element); " +
                         "})()", null);
+
+
             }
+
         });
+
+
+        myWebView.loadUrl("https://www.emathhelp.net/en/calculators/discrete-mathematics/boolean-algebra-calculator/?f=" + encodedQuery);
+        Log.d("StepLog", "https://www.emathhelp.net/en/calculators/discrete-mathematics/boolean-algebra-calculator/?f=" + encodedQuery);
+
 
     }
 
@@ -921,6 +1009,43 @@ public class FormulaTruthTable extends AppCompatActivity {
         return outputExpression.toString();
     }
 
+    private String convertToBoolean2(String expression) {
+        // Split the input expression by '+' to get individual terms
+        String[] terms = expression.split("\\s*\\+\\s*");
+
+        StringBuilder outputExpression = new StringBuilder();
+
+        for (int i = 0; i < terms.length; i++) {
+            String term = terms[i];
+            StringBuilder convertedTerm = new StringBuilder();
+
+            boolean previousWasNegatedVariable = false;
+
+            for (int j = 0; j < term.length(); j++) {
+                char character = term.charAt(j);
+
+                if (character == '\'') {
+                    // If it's a prime (negation), prepend '~' to the last character in convertedTerm
+                    convertedTerm.insert(convertedTerm.length() - 1, '~');
+                    previousWasNegatedVariable = true; // Marking that the last variable was negated
+                } else {
+                    // Check if the current and previous characters are letters or if previous was a negated variable
+                    if (j > 0 && (Character.isLetter(character) || previousWasNegatedVariable)) {
+                        // If it's a letter or previous was a negated variable, insert "OR"
+                        convertedTerm.append(" OR ");
+                    }
+                    convertedTerm.append(character);
+                    previousWasNegatedVariable = false; // Resetting the flag
+                }
+            }
+            // Add the converted term to the output expression
+            if (i > 0) {
+                outputExpression.append(" AND ");
+            }
+            outputExpression.append('(').append(convertedTerm).append(')');
+        }
+        return outputExpression.toString();
+    }
 
 
     private void finalSimplified(String query) {
@@ -952,14 +1077,7 @@ public class FormulaTruthTable extends AppCompatActivity {
                     // Parse the XML to find the image URL
                     final String text = extractPlainText(responseData);
 
-                    String encodedQuery = null;
-                    try {
-                        encodedQuery = URLEncoder.encode(text, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-                    //TODO Remove Comment
-                    fetchWolframAlphaResult(encodedQuery);
+
 
 
                     // Update the ImageView on the UI thread
@@ -974,6 +1092,15 @@ public class FormulaTruthTable extends AppCompatActivity {
                                 container_simplify.setVisibility(View.VISIBLE);
                                 txtSimplifiedExpression.setText("F = " + text );
 
+
+                                String encodedQuery = null;
+                                try {
+                                    encodedQuery = URLEncoder.encode(text, "UTF-8");
+                                } catch (UnsupportedEncodingException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                //TODO Remove Comment
+                                fetchWolframAlphaResult(encodedQuery);
 
                             }catch (Exception e) {
                                 container_simplify.setVisibility(View.GONE);

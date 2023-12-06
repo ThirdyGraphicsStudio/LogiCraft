@@ -355,7 +355,7 @@
                         <LinearLayout
                             android:id="@+id/container_simplify"
                             android:layout_width="match_parent"
-                            android:layout_height="1000dp"
+                            android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:layout_marginVertical="20dp"
                             >
@@ -412,8 +412,9 @@
                                 />
 
                             <WebView
+                                android:visibility="gone"
                                 android:layout_width="match_parent"
-                                android:layout_height="1000dp"
+                                android:layout_height="match_parent"
                                 android:id="@+id/webview"
                                 />
 
