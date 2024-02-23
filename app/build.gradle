@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.thirdy.booleanexpression'
+    namespace 'com.thesis.booleanexpression'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.thirdy.booleanexpression"
+        applicationId "com.thesis.booleanexpression"
         minSdk 24
         targetSdk 33
         versionCode 1
